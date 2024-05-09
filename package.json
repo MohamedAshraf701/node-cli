@@ -1,0 +1,28 @@
+{
+  "name": "node--cli",
+  "version": "1.0.0",
+  "description": "A CLI tool to create a folder and file with some code",
+  "main": "index.js",
+  "bin": {
+    "npm-cli": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MohamedAshraf701/node-cli.git"
+  },
+  "author": "zaid.digital",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MohamedAshraf701/node-cli/issues"
+  },
+  "homepage": "https://github.com/MohamedAshraf701/node-cli#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "commander": "^12.0.0",
+    "fs": "^0.0.1-security",
+    "mkdirp": "^3.0.1"
+  }
+}
