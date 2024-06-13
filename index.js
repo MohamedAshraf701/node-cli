@@ -13,7 +13,7 @@ program
     .description('A CLI tool to create a folder structure for Node.js and MongoDB projects')
     .arguments('<name>')
     .action((name) => {
-        const rootPath = path.join(process.cwd());
+        const rootPath = path.join(process.cwd() , "/demo");
 
 
         folders.forEach(folder => {
