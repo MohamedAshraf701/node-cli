@@ -1,75 +1,66 @@
-Certainly! Here's a basic `README.md` file content for your npm package:
+# node-initdb
 
-```markdown
-# NodeMongo CLI
-
-NodeMongo CLI is a command-line tool to quickly generate a folder structure for Node.js and MongoDB projects along with installing necessary packages.
+node-initdb is a CLI tool for initializing database configurations and structures in Node.js projects.
 
 ## Installation
 
-Install globally using npm:
+You can install node-initdb globally using npm:
 
 ```bash
-npm install -g node-mongo-cli
+npm install -g node-initdb
 ```
 
 ## Usage
 
-To use NodeMongo CLI, run the following command:
+To use node-initdb, navigate to your project directory and run one of the following commands based on your database choice:
+
+### Initialize Sequelize Structure
+
+To set up Sequelize with default folders, files, and install necessary packages:
 
 ```bash
-npm-cli <project_name>
+node-initdb --seque
 ```
 
-Replace `<project_name>` with the name of your project. This will create a folder structure with Controllers, Routes, Models, uploads, and Utils directories, along with necessary files and dependencies.
+### Initialize MongoDB Structure
+
+To set up MongoDB with default folders, files, and install necessary packages:
+
+```bash
+node-initdb --mongo
+```
+
+Replace `--seque` or `--mongo` with your choice of database setup.
 
 ## Folder Structure
 
-The folder structure created by NodeMongo CLI includes:
+After running the command, node-initdb will create the following folder structure:
 
 ```
-<project_name>/
-│
-├── Controllers/
-│   └── health.Controller.js
-│
-├── Routes/
-│   └── health.Route.js
-│
-├── Models/
-│   └── model.js
-│
-├── uploads/
-│   └── dummy
-│
-├── Utils/
-│   ├── constant.js
-│   └── error.js
-│
-├── app.js
-├── initDB.js
-└── .env
+- config/
+- Controllers/
+- Routes/
+- Models/
+- uploads/
+- Utils/
 ```
+
+## Files Created
+
+node-initdb creates essential files such as controller, route, model files, and configuration files necessary for setting up your chosen database.
 
 ## Dependencies
 
-NodeMongo CLI installs the following dependencies:
+node-initdb installs the following dependencies based on your database setup:
 
-- body-parser
-- cors
-- dotenv
-- express
-- http
-- http-errors
-- https
-- jsonwebtoken
-- mongoose
-- multer
-- node-cron
+- For Sequelize: `sequelize`, `mysql2`, `body-parser`, `cors`, `dotenv`
+- For MongoDB: `mongoose`, `body-parser`, `cors`, `dotenv`
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
 
-Feel free to modify and expand it according to your preferences or additional features of your CLI tool.
+## Author
+
+- MohamedAshraf
+- GitHub: [Your GitHub Profile](https://github.com/MohamedAshraf701)
