@@ -2,6 +2,10 @@
 
 node-initdb is a CLI tool for initializing database configurations and structures in Node.js projects.
 
+
+![Node InitDB Plugin Demo](example.gif)
+
+
 ## Installation
 
 You can install node-initdb globally using npm:
