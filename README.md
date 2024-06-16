@@ -57,14 +57,20 @@ node-initdb creates essential files such as controller, route, model files, and 
 
 node-initdb installs the following dependencies based on your database setup:
 
-- For Sequelize: `sequelize`, `mysql2`, `body-parser`, `cors`, `dotenv`
-- For MongoDB: `mongoose`, `body-parser`, `cors`, `dotenv`
+- For Sequelize: `sequelize`, `mysql2`
+- For MongoDB: `mongoose`
+- Middleware and Utilities: `express`, `body-parser`, `cors`, `dotenv`, `fs`, `http-errors`, `https`, `jsonwebtoken`, `multer`
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Author
+## Get in touch
 
-- MohamedAshraf
-- GitHub: [Your GitHub Profile](https://github.com/MohamedAshraf701)
+If you have any questions, feel free to reach out:
+
+- Email: ashrafchauhan567@gmail.com
+- Githube: [@MohamedAshraf701](https://github.com/MohamedAshraf701)
+
+# Support
+<p><a href="https://www.buymeacoffee.com/ashraf704"> <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="ashraf704" /></a></p><br><br>
