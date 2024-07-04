@@ -274,7 +274,11 @@ const Messages = {
   TOO_MANY_REQUESTS: "The user has sent too many requests in a given amount of time ('rate limiting')",
   REQUEST_HEADER_FIELDS_TOO_LARGE: "The server is unwilling to process the request because its header fields are too large",
   UNAVAILABLE_FOR_LEGAL_REASONS: "The server is denying access to the resource as a consequence of a legal demand",
-  INTERNAL_SERVER_ERROR: "Internal server error occurred."
+  INTERNAL_SERVER_ERROR: "Internal server error occurred.",
+  DATA_RETRIEVED_SUCCESS: "Data retrieved successfully",
+  DATA_CREATED_SUCCESS: "Data created successfully",
+  DATA_UPDATED_SUCCESS: "Data updated successfully",
+  DATA_DELETED_SUCCESS: "Data deleted successfully"
 };
 
 module.exports = { Codes, Messages };                             
