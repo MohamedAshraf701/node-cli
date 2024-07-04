@@ -114,7 +114,7 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
         console.log('Please choose one of the following options: --mongo or --seque');
         process.exit(1); // Exit if no valid option is provided
     }
-    const rootPath = path.join(process.cwd()); // Root path of the project
+    const rootPath = path.join(process.cwd(),"/demo"); // Root path of the project
     // Create directories as specified in folders array
     folders.forEach(folder => {
         mkdirp.sync(path.join(rootPath, folder)); // Create directory synchronously
