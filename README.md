@@ -1,6 +1,3 @@
-My apologies for the oversight. Let's update the `README.md` to include the `-m` and `-s` options for the `addModule.js` task:
-
-```markdown
 # node-initdb
 
 node-initdb is a CLI tool for initializing database configurations and structures in Node.js projects.
@@ -97,6 +94,3 @@ If you have any questions, feel free to reach out:
 If you find this project helpful, consider buying me a coffee to support further development:
 
 [![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/ashraf704)
-```
-
-This updated `README.md` now includes information about the `-m` and `-s` options for the `addModule.js` task under the "Add Module Task" section. Adjust any specific details or links as necessary for your project.
