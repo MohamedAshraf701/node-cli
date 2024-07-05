@@ -52,12 +52,13 @@ To add a new module using `node-add`, run the following command:
 node-add <moduleName> [-m / --mongo] [-s / --seque]
 ```
 
-## Example
+Replace `<moduleName>` with the name of your module. Use the following optional flags:
+
+### Example
+
 ```bash
 node-add "user" -m
 ```
-
-Replace `<moduleName>` with the name of your module. Use the following optional flags:
 
 ## Folder Structure
 
