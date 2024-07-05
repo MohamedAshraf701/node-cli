@@ -16,6 +16,10 @@ npm install -g node-initdb
 
 To use node-initdb, navigate to your project directory and run one of the following commands based on your database choice:
 
+-	`-m`/`--mongo`: Add MongoDB configuration and files for the module.
+-	`-s`/`--seque`: Add Sequelize configuration and files for the module.
+-	`-y`/`--yes`: Skip interactive prompts and use default values for module creation.
+
 ### Initialize Sequelize Structure
 
 To set up Sequelize with default folders, files, and install necessary packages:
@@ -24,30 +28,31 @@ To set up Sequelize with default folders, files, and install necessary packages:
 node-initdb --seque
 ```
 
+```bash
+node-initdb -s
+```
+
 ### Initialize MongoDB Structure
 
 To set up MongoDB with default folders, files, and install necessary packages:
 
 ```bash
-node-initdb --mongo
+node-initdb --mongo 
 ```
 
-Replace `--seque` or `--mongo` with your choice of database setup.
+```bash
+node-initdb -m
+```
 
 ### Add Module Task
 
 To add a new module using addModule.js, run the following command:
 
 ```bash
-node-add --name <moduleName> [-m] [-s]
+node-add <moduleName> [-m] [-s]
 ```
 
 Replace `<moduleName>` with the name of your module. Use the following optional flags:
-
-- `-m`: Add MongoDB configuration and files for the module.
-- `-s`: Add Sequelize configuration and files for the module.
-
-If neither `-m` nor `-s` is specified, the default behavior adds basic configuration and files suitable for general use.
 
 ## Folder Structure
 
