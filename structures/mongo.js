@@ -1,6 +1,6 @@
 module.exports = {
     folders: ['config','Controllers', 'Routes', 'Models', 'uploads', 'Utils'],
-    files: [
+    files:(index) =>{return  [
         {
             folder: 'Controllers',
             name: 'health.Controller.js',
@@ -457,7 +457,7 @@ module.exports = ResponseHandler;
                 
 ` },
         {
-            folder: '', name: 'index.js', content:
+            folder: '', name: index, content:
                 `
 const express = require("express"); // Importing express module for server operations
 const createError = require("http-errors"); // Importing module to create HTTP errors
@@ -591,6 +591,6 @@ IS_HTTPS=false
 KEYPATH=
 CARTPATH=
 JWT_SECRET=` } // Empty .env file
-    ],
+    ]},
     cmd : 'npm install body-parser cors dotenv express fs http-errors https jsonwebtoken mongoose multer'
 }

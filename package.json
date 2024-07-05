@@ -1,12 +1,27 @@
 {
   "name": "node-initdb",
-  "version": "1.0.0-beta.5",
+  "version": "0.0.2-beta.7",
   "description": "A CLI tool to create a folder and file with some code",
   "main": "index.js",
   "bin": {
     "node-initdb": "./index.js",
-    "node-add" : "./addModule.js"
+    "node-add": "./addModule.js"
   },
+  "keywords": [
+    "node",
+    "npm",
+    "cli",
+    "cli-tool",
+    "init",
+    "initdb",
+    "init-db",
+    "mongodb",
+    "sequelize",
+    "express",
+    "mongo",
+    "mongo-db",
+    "mongo-db-cli"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

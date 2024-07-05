@@ -104,17 +104,17 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
      // Determine which database setup to initialize based on user input
      if(options.seque){
         folders = Seque.folders; // Folders from Sequelize configuration
-        files = Seque.files; // Files from Sequelize configuration
+        files = Seque.files(answers[3] || defaultValues[3]); // Files from Sequelize configuration
         cmd = Seque.cmd; // Command to execute from Sequelize configuration
     } else if(options.mongo) {
         folders = Mongo.folders; // Folders from MongoDB configuration
-        files = Mongo.files; // Files from MongoDB configuration
+        files = Mongo.files(answers[3] || defaultValues[3]); // Files from MongoDB configuration
         cmd = Mongo.cmd; // Command to execute from MongoDB configuration
     } else {
         console.log('Please choose one of the following options: --mongo or --seque');
         process.exit(1); // Exit if no valid option is provided
     }
-    const rootPath = path.join(process.cwd(),"/demo"); // Root path of the project
+    const rootPath = path.join(process.cwd()); // Root path of the project
     // Create directories as specified in folders array
     folders.forEach(folder => {
         mkdirp.sync(path.join(rootPath, folder)); // Create directory synchronously

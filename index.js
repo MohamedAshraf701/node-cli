@@ -4,8 +4,6 @@
 const { program } = require('commander');
 const askQuestion = require('./init'); // Function to initialize questions
 
-
-
 // Setting up the CLI tool with commander
 program
     .version('1.0.0')
