@@ -49,11 +49,10 @@ node-initdb -m
 To add a new module using `node-add`, run the following command:
 
 ```bash
-node-add <moduleName> [-m] [-s]
+node-add <moduleName> [-m / --mongo] [-s / --seque]
 ```
 
 ## Example
-
 ```bash
 node-add "user" -m
 ```
