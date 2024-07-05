@@ -1,6 +1,6 @@
 module.exports = {
     folders: ['config','Controllers', 'Routes', 'Models', 'uploads', 'Utils'],
-    files: [
+    files:(index) =>{return  [
         {
             folder: 'Controllers',
             name: 'health.Controller.js',
@@ -47,29 +47,127 @@ module.exports = router;
                 ` },
         {
             folder: 'Models',
-            name: 'user.Model.js',
+            name: 'example.Model.js',
             content:
                 `
-  // Load mongoose module for MongoDB interactions
-  const mongoose = require("mongoose");
-  
-  // Retrieve the Schema constructor from the mongoose object
-  const Schema = mongoose.Schema;
-  
-  // Define the schema for a user with specific fields and validation rules
-  const userSchema = new Schema({
-      // Define a 'username' field which is of type String and is required
-      username: {
-          type: String,
-          require: true
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+// Define the schema
+const ExampleSchema = new Schema({
+  // String field with required validation, minimum length, maximum length, and default value
+  stringField: {
+    type: String,
+    required: [true, 'String field is required'], // Field is required
+    minlength: [5, 'String field must be at least 5 characters long'], // Minimum length constraint
+    maxlength: [50, 'String field must be less than 50 characters long'], // Maximum length constraint
+    default: 'Default String' // Default value if not provided
+  },
+  // Number field with required validation, minimum value, maximum value, and default value
+  numberField: {
+    type: Number,
+    required: [true, 'Number field is required'], // Field is required
+    min: [0, 'Number field must be at least 0'], // Minimum value constraint
+    max: [100, 'Number field must be less than or equal to 100'], // Maximum value constraint
+    default: 42 // Default value if not provided
+  },
+  // Date field with default value set to current date and time
+  dateField: {
+    type: Date,
+    default: Date.now // Default value set to current date and time
+  },
+  // Buffer field for storing binary data (no specific validation or default value provided here)
+  bufferField: Buffer,
+  // Boolean field with default value
+  booleanField: {
+    type: Boolean,
+    default: false // Default value if not provided
+  },
+  // Mixed field that can hold any type of value, with an empty object as default
+  mixedField: {
+    type: Schema.Types.Mixed,
+    default: {} // Default value is an empty object
+  },
+  // ObjectId field for referencing another document (self-referencing for example)
+  objectIdField: {
+    type: Schema.Types.ObjectId,
+    ref: 'ExampleModel' // Reference to self (example purposes only)
+  },
+  // Array field containing strings, with default values
+  arrayField: {
+    type: [String],
+    default: ['defaultItem1', 'defaultItem2'] // Default array with two items
+  },
+  // Decimal128 field for high-precision decimal values
+  decimal128Field: {
+    type: Schema.Types.Decimal128,
+    default: 0.0 // Default value is 0.0
+  },
+  // Map field for storing key-value pairs of strings
+  mapField: {
+    type: Map,
+    of: String,
+    default: new Map([['key1', 'value1'], ['key2', 'value2']]) // Default map with key-value pairs
+  },
+  // Nested object with fields containing default values
+  nestedObject: {
+    nestedString: {
+      type: String,
+      default: 'Nested Default String' // Default value for nestedString
+    },
+    nestedNumber: {
+      type: Number,
+      default: 10 // Default value for nestedNumber
+    }
+  },
+  // List of lists containing nested arrays of numbers with default values
+  listOfLists: {
+    type: [[Number]],
+    default: [[1, 2, 3], [4, 5, 6]] // Default list of lists with nested numbers
+  },
+  // List of objects with subfields and default values
+  listOfObjects: {
+    type: [{
+      subField1: {
+        type: String,
+        default: 'SubField Default' // Default value for subField1
       },
-  }, { timestamps: true }); // Enable automatic creation of createdAt and updatedAt timestamps
-  
-  // Create a model from the schema to interface with the database
-  const Users = mongoose.model("Users", userSchema);
-  
-  // Export the Users model to be used in other parts of the application
-  module.exports = Users;
+      subField2: {
+        type: Number,
+        default: 100 // Default value for subField2
+      }
+    }],
+    default: [{ subField1: 'Default1', subField2: 100 }, { subField1: 'Default2', subField2: 200 }] // Default array of objects
+  },
+  // Email field with validation for format, uniqueness, and trimming
+  emailField: {
+    type: String,
+    required: [true, 'Email is required'], // Field is required
+    unique: true, // Ensure uniqueness
+    lowercase: true, // Convert to lowercase
+    trim: true, // Trim whitespace
+    match: [/\S+@\S+\.\S+/, 'Invalid email address'] // Validate format using regex
+  }
+}, {
+  timestamps: true, // Add createdAt and updatedAt timestamps
+  versionKey: false // Disable versioning
+});
+
+// Add index on emailField for uniqueness
+ExampleSchema.index({ emailField: 1 }, { unique: true });
+
+// Middleware example (pre-save hook for validation)
+ExampleSchema.pre('save', function(next) {
+  // Add custom logic before saving
+  console.log('Saving document...');
+  next();
+});
+
+// Create the model based on the schema
+const ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
+
+// Export the model for use in other parts of the application
+module.exports = ExampleModel;
                 
         ` },
         { folder: 'uploads', name: 'dummy', content: '// Dummy file' },
@@ -176,7 +274,11 @@ const Messages = {
   TOO_MANY_REQUESTS: "The user has sent too many requests in a given amount of time ('rate limiting')",
   REQUEST_HEADER_FIELDS_TOO_LARGE: "The server is unwilling to process the request because its header fields are too large",
   UNAVAILABLE_FOR_LEGAL_REASONS: "The server is denying access to the resource as a consequence of a legal demand",
-  INTERNAL_SERVER_ERROR: "Internal server error occurred."
+  INTERNAL_SERVER_ERROR: "Internal server error occurred.",
+  DATA_RETRIEVED_SUCCESS: "Data retrieved successfully",
+  DATA_CREATED_SUCCESS: "Data created successfully",
+  DATA_UPDATED_SUCCESS: "Data updated successfully",
+  DATA_DELETED_SUCCESS: "Data deleted successfully"
 };
 
 module.exports = { Codes, Messages };                             
@@ -355,7 +457,7 @@ module.exports = ResponseHandler;
                 
 ` },
         {
-            folder: '', name: 'index.js', content:
+            folder: '', name: index, content:
                 `
 const express = require("express"); // Importing express module for server operations
 const createError = require("http-errors"); // Importing module to create HTTP errors
@@ -489,6 +591,6 @@ IS_HTTPS=false
 KEYPATH=
 CARTPATH=
 JWT_SECRET=` } // Empty .env file
-    ],
+    ]},
     cmd : 'npm install body-parser cors dotenv express fs http-errors https jsonwebtoken mongoose multer'
 }

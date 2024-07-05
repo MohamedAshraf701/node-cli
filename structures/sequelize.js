@@ -1,6 +1,6 @@
 module.exports = {
     folders: ['config','Controllers', 'Routes', 'Models', 'uploads', 'Utils'],
-    files: [
+    files: (index) =>{return [
         {
             folder: 'Controllers',
             name: 'health.Controller.js',
@@ -359,7 +359,7 @@ module.exports = ResponseHandler;
                 
 ` },
         {
-            folder: '', name: 'index.js', content:
+            folder: '', name: index, content:
                 `
 // Importing necessary modules
 const express = require("express"); // Express framework for handling server-side logic
@@ -484,6 +484,6 @@ IS_HTTPS=false
 KEYPATH=
 CARTPATH=
 JWT_SECRET=` } // Empty .env file
-    ],
+    ]},
     cmd : 'npm install body-parser cors dotenv express fs http-errors https jsonwebtoken sequelize mysql2 multer'
 }
