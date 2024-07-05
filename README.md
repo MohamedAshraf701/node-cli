@@ -46,7 +46,7 @@ node-initdb -m
 
 ### Add Module Task
 
-To add a new module using addModule.js, run the following command:
+To add a new module using `node-add`, run the following command:
 
 ```bash
 node-add <moduleName> [-m] [-s]
