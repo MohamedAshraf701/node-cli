@@ -104,11 +104,11 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
      // Determine which database setup to initialize based on user input
      if(options.seque){
         folders = Seque.folders; // Folders from Sequelize configuration
-        files = Seque.files(answers[3] || defaultValues[3]); // Files from Sequelize configuration
+        files = Seque.files(answers[3] || defaultValues[3],answers[0] || defaultValues[0]); // Files from Sequelize configuration
         cmd = Seque.cmd; // Command to execute from Sequelize configuration
     } else if(options.mongo) {
         folders = Mongo.folders; // Folders from MongoDB configuration
-        files = Mongo.files(answers[3] || defaultValues[3]); // Files from MongoDB configuration
+        files = Mongo.files(answers[3] || defaultValues[3],answers[0] || defaultValues[0]); // Files from MongoDB configuration
         cmd = Mongo.cmd; // Command to execute from MongoDB configuration
     } else {
         console.log('Please choose one of the following options: --mongo or --seque');
