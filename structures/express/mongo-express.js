@@ -1,5 +1,5 @@
 module.exports = {
-    folders: ['config','Controllers', 'Routes', 'Models', 'uploads', 'Utils'],
+    folders: ['config','Controllers', 'Routes', 'Models', 'uploads', 'Middleware' , 'Utils'],
     files:(index,Projectname) =>{return  [
         {
             folder: 'Controllers',
@@ -358,7 +358,7 @@ module.exports = {
             `
         },
         {
-            folder : 'Utils', name : 'jwtToken.js', content :
+            folder : 'Middleware', name : 'jwtToken.js', content :
             `'use strict'
 // jwtHelper.js
 const jwt = require('jsonwebtoken');
@@ -580,6 +580,50 @@ module.exports = () => {
   });
 };
                 ` },
+        {
+            folder: 'Middleware', name: 'fileUpload.js',
+            content:
+                `
+/**
+ * @fileoverview This module sets up and exports a configured Multer instance 
+ * for handling file uploads in a Node.js application. It includes:
+ * - Storage configuration for saving uploaded files.
+ * - File filtering to allow only image uploads.
+ * - File size limit enforcement.
+ */
+
+const multer = require("multer"); // Importing multer for handling file uploads
+
+// Configure storage settings for multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/"); // Set upload destination folder
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname); // Rename file with timestamp to avoid conflicts
+    }
+});
+
+// Define a filter to allow only image files
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+        cb(null, true); // Accept the file
+    } else {
+        cb(new Error("Only images are allowed!"), false); // Reject non-image files
+    }
+};
+
+// Configure multer with storage, file filtering, and size limits
+const upload = multer({
+    storage, // Use defined storage settings
+    fileFilter, // Apply file type filter
+    limits: { fileSize: 2 * 1024 * 1024 } // Limit file size to 2MB
+});
+
+module.exports = upload; // Export configured multer instance
+
+
+                ` },
                 {
                   folder: '', name: '.env', content:
                       `PORT=3000
@@ -613,6 +657,7 @@ The following structure was generated:
 - Routes/
 - Models/
 - uploads/
+- Middleware
 - Utils/
 ---
 

@@ -1,8 +1,8 @@
 const fs = require('fs'); // File system module for file operations
 const readline = require('readline'); // Module for reading line input from the console
 const path = require('path'); // Module for handling file paths
-const Mongo = require('./structures/mongo'); // MongoDB structure configuration
-const Seque = require('./structures/sequelize'); // Sequelize structure configuration
+const Mongo = require('./structures/express/mongo-express'); // MongoDB structure configuration
+const Seque = require('./structures/express/sequelize-express'); // Sequelize structure configuration
 const { exec } = require('child_process');
 const mkdirp = require('mkdirp');
 // Variables to hold folder and file structures and commands

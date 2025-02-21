@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { folders, sfiles, mfiles } = require('./structures/module');
+const { folders, sfiles, mfiles } = require('./structures/express/module-express');
 const { program } = require('commander');
 const mkdirp = require('mkdirp');
 const fs = require('fs'); // File system module for file operations
