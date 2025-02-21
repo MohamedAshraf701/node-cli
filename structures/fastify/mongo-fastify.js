@@ -504,7 +504,7 @@ fastify.register(require('@fastify/formbody'));
 fastify.register(require("@fastify/multipart"));
 
 fastify.register(require('@fastify/jwt'), {
-    secret: process.env.JWT_SECRET 
+    secret: process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD('
 });
 
 // Custom decorator for JWT authentication
@@ -515,7 +515,7 @@ require("./config/dbConfig")();
 
 // Registering routes for static file serving
 fastify.register(require('@fastify/static'), {
-  root: '${__dirname}/uploads',
+  root: __dirname + '/uploads',
   prefix: '/api/v1/uploads/'
 });
 

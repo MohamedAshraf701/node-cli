@@ -60,12 +60,20 @@ program
         } else {
             let moduleName =capitalizeAndValidateFilename(name);
             const rootPath = path.join(process.cwd()); // Root path of the project
-
+            let folders;
+            let sfiles
+            let mfiles
             if(options.fastify){
-                const { folders, sfiles, mfiles } = require('./structures/fastify/module-fastify');
+                const fastify = require('./structures/fastify/module-fastify');
+                folders = fastify.folders;
+                sfiles = fastify.sfiles;
+                mfiles = fastify.mfiles;
             }
             else{
-                const { folders, sfiles, mfiles } = require('./structures/express/module-express');
+                const express = require('./structures/express/module-express');
+                folders = express.folders;
+                sfiles = express.sfiles;
+                mfiles = express.mfiles
             }
             // Create directories as specified in folders array
             folders.forEach(folder => {
@@ -88,25 +96,25 @@ program
             if (options.fastify) {
                 // Execute command to install required packages
                 console.log(`
-                    Add This Code Into Your Project Main file 
-                    
-                    // Importing route 
-                    const Routes${moduleName} = require("./Routes/${moduleName}.Route");
-                    
-                    // Registering route with API v1 router
-                    fastify.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
+Add This Code Into Your Project Main file 
+
+// Importing route 
+const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+
+// Registering route with API v1 router
+fastify.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
                     
                     `);
                 } else{
                 // Execute command to install required packages
                 console.log(`
-                    Add This Code Into Your Project Main file 
-                    
-                    // Importing route 
-                    const Routes${moduleName} = require("./Routes/${moduleName}.Route");
-                    
-                    // Registering route with API v1 router
-                    apiV1Router.use("/${moduleName}", Routes${moduleName});
+Add This Code Into Your Project Main file 
+
+// Importing route 
+const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+
+// Registering route with API v1 router
+apiV1Router.use("/${moduleName}", Routes${moduleName});
                 
                     `);
             }

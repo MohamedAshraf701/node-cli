@@ -627,14 +627,14 @@ module.exports = upload; // Export configured multer instance
                 {
                   folder: '', name: '.env', content:
                       `PORT=3000
-      MONGODB_URI=mongodb://localhost:27017/
-      DB_NAME=test
-      DB_USER=
-      DB_PASS=
-      IS_HTTPS=false
-      KEYPATH=
-      CARTPATH=
-      JWT_SECRET=` } ,
+MONGODB_URI=mongodb://localhost:27017/
+DB_NAME=test
+DB_USER=
+DB_PASS=
+IS_HTTPS=false
+KEYPATH=
+CARTPATH=
+JWT_SECRET=` } ,
       {
         folder: '', name: 'README.md', content:
             `# **${Projectname}**

@@ -100,37 +100,124 @@ const uploadMiddleware = async (req, reply) => {
 
 module.exports = uploadMiddleware;
                 ` },
-        {
-            folder: 'Models',
-            name: 'user.Model.js',
-            content:
-                `
-const { DataTypes } = require('sequelize'); // Importing DataTypes from sequelize for defining model attributes
-const { sequelize } = require('../config/dbConfig'); // Importing sequelize instance from dbConfig
+                {
+                  folder: 'Models',
+                  name: 'Example.Model.js',
+                  content:
+                      `
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/dbConfig'); // Update the path as necessary
 
-// Defining the User model with its structure and rules
-const User = sequelize.define('User', {
-  username: {
-    type: DataTypes.STRING, // Specifies the data type of username as string
-    allowNull: false, // Makes the username field non-nullable
-  },
-  email: {
-    type: DataTypes.STRING, // Specifies the data type of email as string
-    allowNull: false, // Makes the email field non-nullable
-    unique: true, // Ensures email values are unique across the table
-  },
-  password: {
-    type: DataTypes.STRING, // Specifies the data type of password as string
-    allowNull: false, // Makes the password field non-nullable
-  },
+const   ExampleModel = sequelize.define('ExampleModel', {
+    // String field with required validation, minimum length, maximum length, and default value
+    stringField: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notNull: { msg: 'String field is required' },
+            len: {
+                args: [5, 50],
+                msg: 'String field must be between 5 and 50 characters long'
+            }
+        },
+        defaultValue: 'Default String'
+    },
+    // Number field with required validation, minimum value, maximum value, and default value
+    numberField: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+            notNull: { msg: 'Number field is required' },
+            min: {
+                args: [0],
+                msg: 'Number field must be at least 0'
+            },
+            max: {
+                args: [100],
+                msg: 'Number field must be less than or equal to 100'
+            }
+        },
+        defaultValue: 42
+    },
+    // Date field with default value set to current date and time
+    dateField: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    },
+    // Buffer field for storing binary data (no specific validation or default value provided here)
+    bufferField: {
+        type: DataTypes.BLOB
+    },
+    // Boolean field with default value
+    booleanField: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    // Mixed field that can hold any type of value, with an empty object as default (using JSON type)
+    mixedField: {
+        type: DataTypes.JSON,
+        defaultValue: {}
+    },
+    // ObjectId field for referencing another document (self-referencing for ${Projectname})
+    objectIdField: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4
+    },
+    // Array field containing strings, with default values
+    arrayField: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: ['defaultItem1', 'defaultItem2']
+    },
+    // Decimal128 field for high-precision decimal values
+    decimal128Field: {
+        type: DataTypes.DECIMAL(38, 16),
+        defaultValue: 0.0
+    },
+    // Map field for storing key-value pairs of strings (using JSON type)
+    mapField: {
+        type: DataTypes.JSON,
+        defaultValue: { key1: 'value1', key2: 'value2' }
+    },
+    // Nested object with fields containing default values (using JSON type)
+    nestedObject: {
+        type: DataTypes.JSON,
+        defaultValue: { nestedString: 'Nested Default String', nestedNumber: 10 }
+    },
+    // List of lists containing nested arrays of numbers with default values
+    listOfLists: {
+        type: DataTypes.JSON,
+        defaultValue: [[1, 2, 3], [4, 5, 6]]
+    },
+    // List of objects with subfields and default values
+    listOfObjects: {
+        type: DataTypes.JSON,
+        defaultValue: [
+            { subField1: 'Default1', subField2: 100 },
+            { subField1: 'Default2', subField2: 200 }
+        ]
+    },
+    // Email field with validation for format, uniqueness, and trimming
+    emailField: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        set(value) {
+            this.setDataValue('emailField', value.trim().toLowerCase());
+        },
+        validate: {
+            notNull: { msg: 'Email is required' },
+            isEmail: { msg: 'Invalid email address' }
+        }
+    }
 }, {
-  // options - Additional model configuration options can be specified here
+    tableName: 'example_models',
+    timestamps: true
 });
 
-module.exports = User; // Exporting the User model for use in other parts of the application
-                
-                
-        ` },
+module.exports = ExampleModel;
+                      
+                      
+              ` },
         { folder: 'uploads', name: 'dummy', content: '// Dummy file' },
         {
             folder: 'Utils', name: 'httpCodesAndMessages.js', content:
@@ -446,7 +533,7 @@ fastify.register(require('@fastify/formbody'));
 fastify.register(require("@fastify/multipart"));
 
 fastify.register(require('@fastify/jwt'), {
-    secret: process.env.JWT_SECRET 
+    secret: process.env.JWT_SECRET  || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD('
 });
 
 // Custom decorator for JWT authentication
@@ -458,20 +545,13 @@ connectDB(); // Connecting to the database
 
 // Registering routes for static file serving
 fastify.register(require('@fastify/static'), {
-  root: '${__dirname}/uploads',
+  root: __dirname + '/uploads',
   prefix: '/api/v1/uploads/'
 });
 
 // Registering routes for health checks
 const RoutesHealth = require("./Routes/health.Route");
-
-
-// Importing route
-const RoutesUser = require("./Routes/User.Route");
-
-
 fastify.register(RoutesHealth ,{prefix : "/api/v1/health"});
-fastify.register(RoutesUser ,{prefix : "/api/v1/User"});
 
 // Setting up error handler for not found routes
 fastify.setNotFoundHandler((request, reply) => {
