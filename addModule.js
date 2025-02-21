@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-
-const { folders, sfiles, mfiles } = require('./structures/express/module-express');
 const { program } = require('commander');
 const mkdirp = require('mkdirp');
 const fs = require('fs'); // File system module for file operations
@@ -10,6 +8,7 @@ function capitalizeFirstChar(str) {
     if (!str) return str; // Return the string if it's empty or null
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+  
 // Setting up the CLI tool with commander
 program
     .version('1.0.0')
@@ -17,6 +16,9 @@ program
     .arguments('<name>')
     .option('-m, --mongo', 'SetUp Initializing For MongoDB')
     .option('-s, --seque', 'SetUp Initializing For Sequelize')
+    .option('-e, --express', 'SetUp Initializing For express js')
+    .option('-f, --fastify', 'SetUp Initializing For fastify js')
+  
     .action((name, options) => {
         // 'name' will be the first argument after the command
          const capitalizeAndValidateFilename=(str)=> {
@@ -40,6 +42,15 @@ program
           
             return capitalizedStr;
           }
+             // Ensure that exactly one of --express or --fastify is chosen
+    if (!options.express && !options.fastify) {
+        console.error('Please choose one of the following options: --express or --fastify');
+        process.exit(1);
+      }
+      if (options.express && options.fastify) {
+        console.error('Please choose only one option: either --express or --fastify, not both.');
+        process.exit(1);
+      }
         if (!name) {
             console.log('Please provide a project name as an argument.');
             process.exit(1); // Exit if project name is not provided
@@ -49,6 +60,13 @@ program
         } else {
             let moduleName =capitalizeAndValidateFilename(name);
             const rootPath = path.join(process.cwd()); // Root path of the project
+
+            if(options.fastify){
+                const { folders, sfiles, mfiles } = require('./structures/fastify/module-fastify');
+            }
+            else{
+                const { folders, sfiles, mfiles } = require('./structures/express/module-express');
+            }
             // Create directories as specified in folders array
             folders.forEach(folder => {
                 mkdirp.sync(path.join(rootPath, folder)); // Create directory synchronously
@@ -67,16 +85,32 @@ program
                 console.log(`File "${file.name}" created successfully.`);
             });
 
-            // Execute command to install required packages
-            console.log(`
-Add This Code Into Your Project Main file 
+            if (options.fastify) {
+                // Execute command to install required packages
+                console.log(`
+                    Add This Code Into Your Project Main file 
+                    
+                    // Importing route 
+                    const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+                    
+                    // Registering route with API v1 router
+                    fastify.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
+                    
+                    `);
+                } else{
+                // Execute command to install required packages
+                console.log(`
+                    Add This Code Into Your Project Main file 
+                    
+                    // Importing route 
+                    const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+                    
+                    // Registering route with API v1 router
+                    apiV1Router.use("/${moduleName}", Routes${moduleName});
+                
+                    `);
+            }
 
-// Importing route 
-const Routes${moduleName} = require("./Routes/${moduleName}.Route");
-
-// Registering route with API v1 router
-apiV1Router.use("/${moduleName}", Routes${moduleName});
-`);
         }
     });
 

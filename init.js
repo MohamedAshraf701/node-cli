@@ -1,8 +1,7 @@
 const fs = require('fs'); // File system module for file operations
 const readline = require('readline'); // Module for reading line input from the console
 const path = require('path'); // Module for handling file paths
-const Mongo = require('./structures/express/mongo-express'); // MongoDB structure configuration
-const Seque = require('./structures/express/sequelize-express'); // Sequelize structure configuration
+
 const { exec } = require('child_process');
 const mkdirp = require('mkdirp');
 // Variables to hold folder and file structures and commands
@@ -99,9 +98,17 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
 
     fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2)); // Write the package.json file
     console.log("package.json file has been generated");
-
     rl.close();
+    let Mongo;
+    let Seque;
      // Determine which database setup to initialize based on user input
+     if(options.fastify){
+       Mongo = require('./structures/fastify/mongo-fastify'); // MongoDB structure configuration
+       Seque = require('./structures/fastify/sequelize-fastify'); // Sequelize structure configuration
+     }else {
+      Mongo = require('./structures/express/mongo-express'); // MongoDB structure configuration
+      Seque = require('./structures/express/sequelize-express'); // Sequelize structure configuration
+     }
      if(options.seque){
         folders = Seque.folders; // Folders from Sequelize configuration
         files = Seque.files(answers[3] || defaultValues[3],answers[0] || defaultValues[0]); // Files from Sequelize configuration
