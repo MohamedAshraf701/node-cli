@@ -142,7 +142,6 @@ module.exports = {
       return;
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
       return;
     }
   },
@@ -170,7 +169,6 @@ module.exports = {
       }
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
       return;
     }
   },
@@ -191,7 +189,7 @@ module.exports = {
       }
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
+      return;
     }
   },
 
@@ -211,7 +209,7 @@ module.exports = {
       }
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
+      return;
     }
   }
 }
@@ -384,7 +382,7 @@ module.exports = {
       ResponseHandler.sendSuccess(res, result, Codes.CREATED, Messages.DATA_CREATED_SUCCESS);
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
+      return;
     }
   },
 
@@ -409,7 +407,7 @@ module.exports = {
       }
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
+      return;
     }
   },
 
@@ -430,7 +428,7 @@ module.exports = {
       }
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
+      return;
     }
   },
 
@@ -448,7 +446,7 @@ module.exports = {
       }
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-      next(error);
+      return;
     }
   }
 }

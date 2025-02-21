@@ -21,8 +21,8 @@ module.exports = {
           } catch (error) {
               // Handle any errors that occur during the process by sending an error response
               ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-              next(error); // Pass the error to the next middleware for further handling
-          }
+              return;
+         }
       }
   }
                 ` },
