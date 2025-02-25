@@ -214,7 +214,7 @@ const ExampleModel: Model<IExample> = mongoose.model<IExample>('ExampleModel', E
 export default ExampleModel;
                 
         ` },
-        { folder: 'ploads', name: 'dummy', content: '// Dummy file' },
+        { folder: 'uploads', name: 'dummy', content: '// Dummy file' },
         {
             folder: 'Utils', name: 'httpCodesAndMessages.ts', content:
                 `
