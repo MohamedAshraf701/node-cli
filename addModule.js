@@ -18,6 +18,8 @@ program
     .option('-s, --seque', 'SetUp Initializing For Sequelize')
     .option('-e, --express', 'SetUp Initializing For express js')
     .option('-f, --fastify', 'SetUp Initializing For fastify js')
+    .option('-j, --javascript', 'SetUp Initializing For javascript')
+    .option('-t, --typescript', 'SetUp Initializing For typescript')
   
     .action((name, options) => {
         // 'name' will be the first argument after the command
@@ -51,6 +53,14 @@ program
         console.error('Please choose only one option: either --express or --fastify, not both.');
         process.exit(1);
       }
+    if (!options.javascript && !options.typescript) {
+        console.error('Please choose one of the following options: --javascript or --typescript');
+        process.exit(1);
+      }
+      if (options.javascript && options.typescript) {
+        console.error('Please choose only one option: either --javascript or --typescript, not both.');
+        process.exit(1);
+      }
         if (!name) {
             console.log('Please provide a project name as an argument.');
             process.exit(1); // Exit if project name is not provided
@@ -62,10 +72,16 @@ program
             const rootPath = path.join(process.cwd()); // Root path of the project
 
             if(options.fastify){
-                const { folders, sfiles, mfiles } = require('./structures/fastify/module-fastify');
+                if(options.javascript){
+                    const { folders, sfiles, mfiles } = require('./structures/JS/fastify/module-fastify');
+                }
+                    const { folders, sfiles, mfiles } = require('./structures/TS/fastify/module-fastify');
             }
             else{
-                const { folders, sfiles, mfiles } = require('./structures/express/module-express');
+                if(options.javascript){
+                    const { folders, sfiles, mfiles } = require('./structures/JS/express/module-express');
+                }
+                    const { folders, sfiles, mfiles } = require('./structures/TS/express/module-express');
             }
             // Create directories as specified in folders array
             folders.forEach(folder => {
@@ -86,29 +102,53 @@ program
             });
 
             if (options.fastify) {
-                // Execute command to install required packages
-                console.log(`
-                    Add This Code Into Your Project Main file 
-                    
-                    // Importing route 
-                    const Routes${moduleName} = require("./Routes/${moduleName}.Route");
-                    
-                    // Registering route with API v1 router
-                    fastify.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
-                    
-                    `);
+                if(options.javascript){
+                    console.log(`
+                        Add This Code Into Your Project Main file 
+
+                        // Importing route 
+                        const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+                        
+                        // Registering route with API v1 router
+                        fastify.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
+                        
+                        `);
+                }
+                    console.log(`
+                        Add This Code Into Your Project Main file 
+
+                        // Importing route 
+                        import Routes${moduleName} = './Routes/${moduleName}.Route';
+
+                        // Registering route with API v1 router
+                        server.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
+
+                        `);
+
                 } else{
                 // Execute command to install required packages
-                console.log(`
-                    Add This Code Into Your Project Main file 
-                    
-                    // Importing route 
-                    const Routes${moduleName} = require("./Routes/${moduleName}.Route");
-                    
-                    // Registering route with API v1 router
-                    apiV1Router.use("/${moduleName}", Routes${moduleName});
-                
-                    `);
+                    if(options.javascript){
+                        console.log(`
+                            Add This Code Into Your Project Main file 
+                            
+                            // Importing route 
+                            const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+                            
+                            // Registering route with API v1 router
+                            apiV1Router.use("/${moduleName}", Routes${moduleName});
+                        
+                            `);
+                    }
+                    console.log(`
+                        Add This Code Into Your Project Main file 
+                        
+                        // Importing route 
+                        import Router${moduleName} from './Routes/${moduleName}.Route'
+                        
+                        // Registering route with API v1 router
+                        apiV1Router.use("/${moduleName}", Router${moduleName});
+
+                        `);
             }
 
         }

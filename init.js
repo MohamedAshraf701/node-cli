@@ -103,11 +103,20 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
     let Seque;
      // Determine which database setup to initialize based on user input
      if(options.fastify){
-       Mongo = require('./structures/fastify/mongo-fastify'); // MongoDB structure configuration
-       Seque = require('./structures/fastify/sequelize-fastify'); // Sequelize structure configuration
+        if(options.javascript){
+          Mongo = require('./structures/JS/fastify/mongo-fastify'); // MongoDB structure configuration
+          Seque = require('./structures/JS/fastify/sequelize-fastify'); // Sequelize structure configuration
+        }
+        Mongo = require('./structures/TS/fastify/mongo-fastify'); // MongoDB structure configuration
+        Seque = require('./structures/TS/fastify/sequelize-fastify'); // Sequelize structure configuration
+
      }else {
-      Mongo = require('./structures/express/mongo-express'); // MongoDB structure configuration
-      Seque = require('./structures/express/sequelize-express'); // Sequelize structure configuration
+        if(options.javascript){
+          Mongo = require('./structures/JS/express/mongo-express'); // MongoDB structure configuration
+          Seque = require('./structures/JS/express/sequelize-express'); // Sequelize structure configuration
+        }
+        Mongo = require('./structures/TS/express/mongo-express'); // MongoDB structure configuration
+        Seque = require('./structures/TS/express/sequelize-express'); // Sequelize structure configuration
      }
      if(options.seque){
         folders = Seque.folders; // Folders from Sequelize configuration

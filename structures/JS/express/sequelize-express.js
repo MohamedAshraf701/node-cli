@@ -91,14 +91,14 @@ module.exports = upload; // Export configured multer instance
                 ` },
         {
             folder: 'Models',
-            name: 'user.Model.js',
+            name: 'example.Model.js',
             content:
                 `
 const { DataTypes } = require('sequelize'); // Importing DataTypes from sequelize for defining model attributes
 const { sequelize } = require('../config/dbConfig'); // Importing sequelize instance from dbConfig
 
-// Defining the User model with its structure and rules
-const User = sequelize.define('User', {
+// Defining the example model with its structure and rules
+const example = sequelize.define('example', {
   username: {
     type: DataTypes.STRING, // Specifies the data type of username as string
     allowNull: false, // Makes the username field non-nullable
@@ -116,7 +116,7 @@ const User = sequelize.define('User', {
   // options - Additional model configuration options can be specified here
 });
 
-module.exports = User; // Exporting the User model for use in other parts of the application
+module.exports = example; // Exporting the example model for use in other parts of the application
                 
                 
         ` },

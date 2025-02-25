@@ -13,6 +13,8 @@ program
   .option('-y, --yes', 'Create default structure')
   .option('-e, --express', 'SetUp Initializing For express js')
   .option('-f, --fastify', 'SetUp Initializing For fastify js')
+  .option('-j, --javascript', 'SetUp Initializing For javascript')
+  .option('-t, --typescript', 'SetUp Initializing For typescript')
   .action((options) => {
     // Ensure that exactly one of --express or --fastify is chosen
     if (!options.express && !options.fastify) {
@@ -21,6 +23,14 @@ program
     }
     if (options.express && options.fastify) {
       console.error('Please choose only one option: either --express or --fastify, not both.');
+      process.exit(1);
+    }
+    if (!options.javascript && !options.typescript) {
+      console.error('Please choose one of the following options: --javascript or --typescript');
+      process.exit(1);
+    }
+    if (options.javascript && options.typescript) {
+      console.error('Please choose only one option: either --javascript or --typescript, not both.');
       process.exit(1);
     }
 
