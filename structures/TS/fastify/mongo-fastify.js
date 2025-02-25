@@ -550,7 +550,7 @@ export default ResponseHandler;
                 
 ` },
         {
-            folder: '', name: index.ts, content:
+            folder: '', name: index, content:
                 `
 /**
  * Initializes the Fastify server with logging enabled.
@@ -644,11 +644,11 @@ const startServer = async (): Promise<void> => {
       
       // Start HTTPS server by passing HTTPS options to listen
       await server.listen({ port: PORT, https: { key, cert } });
-      console.log('HTTPS Server started on port: ${PORT}');
+      console.log('HTTPS Server started on port:' PORT);
     } else {
       // Start HTTP server
       await server.listen({ port: PORT });
-      console.log('HTTP Server started on port: ${PORT}');
+      console.log('HTTP Server started on port:' PORT);
     }
   } catch (err) {
     server.log.error(err);

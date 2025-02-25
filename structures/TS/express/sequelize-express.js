@@ -378,7 +378,7 @@ export default ResponseHandler;
                 
 ` },
         {
-            folder: '', name: index.ts, content:
+            folder: '', name: index, content:
                 `
 // Importing necessary modules
 

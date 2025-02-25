@@ -545,7 +545,7 @@ export default ResponseHandler;
                 
 ` },
         {
-            folder: '', name: index.ts, content:
+            folder: '', name: index, content:
                 `
 import express, { NextFunction, Response, Request } from "express";
 import dotenv from 'dotenv'

@@ -26,7 +26,7 @@ const questions = [ // Array of questions for user input
   `Package name: (${currentDirectoryName}) `,
   "Version: (1.0.0) ",
   "Description: ",
-  "Entry point: (index.js) ",
+  "Entry point: (index.js/index.ts) ",
   "Test command: ",
   "Git repository: ",
   "Keywords: ",
@@ -43,7 +43,8 @@ const defaultValues = [ // Default values for each question if no input is provi
   "",
   "",
   "",
-  "ISC"
+  "ISC",
+  "index.ts",
 ];
 
 const answers = []; // Array to store user responses
@@ -80,14 +81,15 @@ const validateAnswer = (index, answer) => { // Function to validate user input b
 
 const askQuestion = (index,options) => { // Recursive function to ask each question to the user
   if (index === questions.length) { // Check if all questions have been asked
+    let rootFilename = options.javascript  ? defaultValues[3] : defaultValues[9]
     const packageJson = { // Object to store the package.json data
       name: answers[0] || defaultValues[0],
       version: answers[1] || defaultValues[1],
       description: answers[2] || defaultValues[2],
-      main: answers[3] || defaultValues[3],
+      main: answers[3] || rootFilename,
       scripts: {
-        start: `node ${answers[3] || defaultValues[3]}`,
-        dev: `nodemon ${answers[3] || defaultValues[3]}`,
+        start: `node ${answers[3] || rootFilename}`,
+        dev: `nodemon ${answers[3] || rootFilename}`,
         test: answers[4] || defaultValues[4]
       },
       repository: answers[5] ? { type: "git", url: answers[5] } : undefined,
@@ -106,25 +108,28 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
         if(options.javascript){
           Mongo = require('./structures/JS/fastify/mongo-fastify'); // MongoDB structure configuration
           Seque = require('./structures/JS/fastify/sequelize-fastify'); // Sequelize structure configuration
+        }else{
+          Mongo = require('./structures/TS/fastify/mongo-fastify'); // MongoDB structure configuration
+          Seque = require('./structures/TS/fastify/sequelize-fastify'); // Sequelize structure configuration
         }
-        Mongo = require('./structures/TS/fastify/mongo-fastify'); // MongoDB structure configuration
-        Seque = require('./structures/TS/fastify/sequelize-fastify'); // Sequelize structure configuration
 
      }else {
         if(options.javascript){
           Mongo = require('./structures/JS/express/mongo-express'); // MongoDB structure configuration
           Seque = require('./structures/JS/express/sequelize-express'); // Sequelize structure configuration
         }
-        Mongo = require('./structures/TS/express/mongo-express'); // MongoDB structure configuration
-        Seque = require('./structures/TS/express/sequelize-express'); // Sequelize structure configuration
+        else{
+          Mongo = require('./structures/TS/express/mongo-express'); // MongoDB structure configuration
+          Seque = require('./structures/TS/express/sequelize-express'); // Sequelize structure configuration
+        }
      }
      if(options.seque){
         folders = Seque.folders; // Folders from Sequelize configuration
-        files = Seque.files(answers[3] || defaultValues[3],answers[0] || defaultValues[0]); // Files from Sequelize configuration
+        files = Seque.files(answers[3] ||rootFilename,answers[0] || defaultValues[0]); // Files from Sequelize configuration
         cmd = Seque.cmd; // Command to execute from Sequelize configuration
     } else if(options.mongo) {
         folders = Mongo.folders; // Folders from MongoDB configuration
-        files = Mongo.files(answers[3] || defaultValues[3],answers[0] || defaultValues[0]); // Files from MongoDB configuration
+        files = Mongo.files(answers[3] || rootFilename,answers[0] || defaultValues[0]); // Files from MongoDB configuration
         cmd = Mongo.cmd; // Command to execute from MongoDB configuration
     } else {
         console.log('Please choose one of the following options: --mongo or --seque');
