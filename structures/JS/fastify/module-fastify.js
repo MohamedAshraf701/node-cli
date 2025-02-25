@@ -242,7 +242,7 @@ async function routes(fastify, options) {
     fastify.delete("/" ,${name}Controller.delete${name});
 }
 
-module.exports = router;
+module.exports = routes;
               ` },
       
       
@@ -251,7 +251,7 @@ module.exports = router;
     sfiles:(name) =>{
       return [{folder: 'Models', name: `${name}.Model.js`, content:`
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/dbConfig'); // Update the path as necessary
+const { sequelize } = require('../config/dbConfig'); // Update the path as necessary
 
 const ${name}Model = sequelize.define('${name}Model', {
     // String field with required validation, minimum length, maximum length, and default value
@@ -357,17 +357,6 @@ const ${name}Model = sequelize.define('${name}Model', {
 }, {
     tableName: '${name}_models',
     timestamps: true
-});
-
-// Add index on emailField for uniqueness
-${name}Model.addIndex({
-    fields: ['emailField'],
-    unique: true
-});
-
-// Middleware ${name} (beforeCreate hook for validation)
-${name}Model.beforeCreate((${name}, options) => {
-    console.log('Creating document...');
 });
 
 module.exports = ${name}Model;
@@ -487,7 +476,7 @@ async function routes(fastify, options) {
     fastify.delete("/" ,${name}Controller.delete${name});
 }
 
-module.exports = router;
+module.exports = routes;
           ` }
     ]
     }

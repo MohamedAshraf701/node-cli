@@ -70,7 +70,9 @@ program
         } else {
             let moduleName =capitalizeAndValidateFilename(name);
             const rootPath = path.join(process.cwd()); // Root path of the project
-
+            let folders;
+            let sfiles
+            let mfiles
             if(options.fastify){
                 if(options.javascript){
                     const { folders, sfiles, mfiles } = require('./structures/JS/fastify/module-fastify');
