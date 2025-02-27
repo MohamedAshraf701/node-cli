@@ -148,50 +148,52 @@ program
       if (options.fastify) {
         if (options.javascript) {
           console.log(`
-                        Add This Code Into Your Project Main file 
+Add This Code Into Your Project Main file 
 
-                        // Importing route 
-                        const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+// Importing route 
+const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+
+// Registering route with API v1 router
+fastify.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
                         
-                        // Registering route with API v1 router
-                        fastify.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
-                        
-                        `);
+          `);
+        } else {
+          console.log(`
+Add This Code Into Your Project Main file 
+
+// Importing route 
+import Routes${moduleName} from './Routes/${moduleName}.Route';
+
+// Registering route with API v1 router
+server.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
+  
+          `);
         }
-        console.log(`
-                        Add This Code Into Your Project Main file 
-
-                        // Importing route 
-                        import Routes${moduleName} = './Routes/${moduleName}.Route';
-
-                        // Registering route with API v1 router
-                        server.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
-
-                        `);
       } else {
         // Execute command to install required packages
         if (options.javascript) {
           console.log(`
-                            Add This Code Into Your Project Main file 
-                            
-                            // Importing route 
-                            const Routes${moduleName} = require("./Routes/${moduleName}.Route");
-                            
-                            // Registering route with API v1 router
-                            apiV1Router.use("/${moduleName}", Routes${moduleName});
-                        
-                            `);
-        }
-        console.log(`
-                        Add This Code Into Your Project Main file 
-                        
-                        // Importing route 
-                        import Router${moduleName} from './Routes/${moduleName}.Route'
-                        
-                        // Registering route with API v1 router
-                        apiV1Router.use("/${moduleName}", Router${moduleName});
+Add This Code Into Your Project Main file 
 
-                        `);
+// Importing route 
+const Routes${moduleName} = require("./Routes/${moduleName}.Route");
+
+// Registering route with API v1 router
+apiV1Router.use("/${moduleName}", Routes${moduleName});
+                        
+          `);
+        }else{
+          console.log(`
+Add This Code Into Your Project Main file 
+
+// Importing route 
+import Router${moduleName} from './Routes/${moduleName}.Route'
+
+// Registering route with API v1 router
+apiV1Router.use("/${moduleName}", Router${moduleName});
+  
+          `);
+        }
       }
     }
   });

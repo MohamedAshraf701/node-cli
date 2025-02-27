@@ -4,7 +4,7 @@ module.exports = {
     return [{
       folder: 'Models', name: `${name}.Model.ts`, content:
         `
-import mongoose, { Schema, Document, Model } from 'mongo
+import mongoose, { Schema, Document, Model } from 'mongoose'
 /**
  * Interface representing a ${name} document in MongoDB.
  */
@@ -191,14 +191,9 @@ const ${name}Schema: Schema<I${name}> = new Schema<I${name}>(
 );
 
 /**
- * Add an index to enforce email uniqueness at the database level.
- */
-${name}Schema.index({ emailField: 1 }, { unique: true });
-
-/**
  * Middleware that runs before saving a document.
  */
-${name}Schema.pre<I${name}>('save', function (next) {
+${name}Schema.pre<I${name}>('save', function (next:  (err?: mongoose.CallbackError) => void) {
   console.log('Saving ${name} document...');
   next();
 });
@@ -221,7 +216,7 @@ export default ${name}Model;
 import { Request, Response, NextFunction } from "express";
 import ResponseHandler from "../Utils/responseHandler"; // Custom response handler
 import { Codes, Messages } from "../Utils/httpCodesAndMessages"; // Status codes & messages
-import ${name}Model from "../Models/${name}.model"; // Adjust path as needed
+import ${name}Model from "../Models/${name}.Model"; // Adjust path as needed
 
 export const ${name}Controller = {
   /**
@@ -325,7 +320,7 @@ import express from 'express'
 const router = express.Router();
 
 // Importing the Controllers 
-import { ${name}Controller } from '../Controller/${name}.controller';
+import { ${name}Controller } from '../Controllers/${name}.Controller';
 
 // Defining a route 
 router.post("/" ,${name}Controller.create${name});
@@ -345,7 +340,7 @@ export default router;
       folder: 'Models', name: `${name}.Model.ts`, content: `
         
 import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "../../config/dbConfig"; // Ensure correct path
+import { sequelize } from "../config/dbConfig"; // Ensure correct path
 
 // ✅ Define TypeScript Interface for Model Attributes
 interface ${name}Attributes {
@@ -523,23 +518,23 @@ import { Codes, Messages } from "../Utils/httpCodesAndMessages";
 // Importing the response handler utility for managing API responses
 import ResponseHandler from "../Utils/responseHandler";
 import { Request, Response, NextFunction } from "express";
-import ${name}Model from "../Models/${name}.model";
+import ${name}Model from "../Models/${name}.Model";
 
 
-export const userController = {
-  createUser: async (req: Request, res: Response, next: NextFunction) => {
+export const ${name}Controller = {
+  create${name}: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await UserModel.create(req.body);
+      const result = await ${name}Model.create(req.body);
       ResponseHandler.sendSuccess(res, result, Codes.CREATED, Messages.DATA_CREATED_SUCCESS);
     } catch (error) {
       ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
     }
   },
 
-  getUser: async (req: Request, res: Response, next: NextFunction) => {
+  get${name}: async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (req.query.id) {
-        const result = await UserModel.findByPk(req.query.id as string);
+        const result = await ${name}Model.findByPk(req.query.id as string);
         if (!result) {
           ResponseHandler.sendError(res, "Data not found", Codes.NOT_FOUND, Messages.NOT_FOUND);
           return;
@@ -550,8 +545,8 @@ export const userController = {
         const limit = 10;
         const offset = (page - 1) * limit;
 
-        const result = await UserModel.findAll({ offset, limit });
-        const totalItem = await UserModel.count();
+        const result = await ${name}Model.findAll({ offset, limit });
+        const totalItem = await ${name}Model.count();
         const totalPages = Math.ceil(totalItem / limit);
 
         ResponseHandler.sendSuccess(res, { result, totalPages }, Codes.OK, Messages.DATA_RETRIEVED_SUCCESS);
@@ -561,10 +556,10 @@ export const userController = {
     }
   },
 
-  updateUser: async (req: Request, res: Response, next: NextFunction) => {
+  update${name}: async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (req.query.id) {
-        const [updatedCount, updatedUsers] = await UserModel.update(req.body, {
+        const [updatedCount, updated${name}s] = await ${name}Model.update(req.body, {
           where: { id: req.query.id as string },
           returning: true,
         });
@@ -574,7 +569,7 @@ export const userController = {
           return;
         }
 
-        ResponseHandler.sendSuccess(res, updatedUsers[0], Codes.OK, Messages.DATA_UPDATED_SUCCESS);
+        ResponseHandler.sendSuccess(res, updated${name}s[0], Codes.OK, Messages.DATA_UPDATED_SUCCESS);
       } else {
         ResponseHandler.sendError(res, "ID not provided", Codes.BAD_REQUEST, Messages.BAD_REQUEST);
       }
@@ -583,10 +578,10 @@ export const userController = {
     }
   },
 
-  deleteUser: async (req: Request, res: Response, next: NextFunction) => {
+  delete${name}: async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (req.query.id) {
-        const result = await UserModel.destroy({ where: { id: req.query.id as string } });
+        const result = await ${name}Model.destroy({ where: { id: req.query.id as string } });
         if (!result) {
           ResponseHandler.sendError(res, "Data not found", Codes.NOT_FOUND, Messages.NOT_FOUND);
           return;
@@ -605,7 +600,7 @@ export const userController = {
     },
     {
       folder: 'Routes',
-      name: `${name}.Route.js`,
+      name: `${name}.Route.ts`,
       content:
         `
 import express from 'express'
@@ -613,7 +608,7 @@ import express from 'express'
 const router = express.Router();
 
 // Importing the Controllers 
-import { ${name}Controller } from '../Controller/${name}.Controller';
+import { ${name}Controller } from '../Controllers/${name}.Controller';
 
 // Defining a route 
 router.post("/" ,${name}Controller.create${name});

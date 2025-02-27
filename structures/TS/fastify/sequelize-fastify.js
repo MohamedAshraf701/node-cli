@@ -6,18 +6,21 @@ module.exports = {
             name: 'health.Controller.ts',
             content:
                 `
-// Importing HTTP status codes and messages from utilities
-import { Codes, Messages } from '../Utils/httpCodesAndMessages';
-// Importing the response handler utility for managing API responses
-import ResponseHandler from '../Utils/responseHandler';
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from "fastify/fastify";
+import { Codes, Messages } from "../Utils/httpCodesAndMessages";
+import ResponseHandler from "../Utils/responseHandler";
 
 export const HealthController = {
-// Health check endpoint
-Health: async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
+  // Health check endpoint
+  Health: async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
     try {
-        // Send a success response indicating the health status
-        ResponseHandler.sendSuccess(res, "health Status", Codes.OK, Messages.OK);
+      const file = req.uploadedFile; // ✅ Get the uploaded file details
+
+      if (!file) {
+        return ResponseHandler.sendError(res, 'No file uploaded', Codes.BAD_REQUEST, Messages.BAD_REQUEST);
+      }
+      // Send a success response indicating the health status
+      ResponseHandler.sendSuccess(res, "health Status", Codes.OK, Messages.OK);
     } catch (error: any) {
       // Handle errors by sending an error response
       ResponseHandler.sendError(
@@ -28,7 +31,7 @@ Health: async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
       );
     }
   }
-};
+};                       
                               
                 ` },
         {
@@ -36,7 +39,6 @@ Health: async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
             name: 'health.Route.ts',
             content:
                 `
-// Routes/health.Route.js
 /**
  * This module exports a function that defines routes for health checks.
  * It imports the HealthController and sets up a GET route for the health check endpoint.
@@ -44,6 +46,7 @@ Health: async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
 
 import { FastifyInstance } from 'fastify';
 import { HealthController } from '../Controllers/health.Controller';
+import uploadMiddleware from '../Middleware/fileUpload';
 
 /**
  * This function is used to define routes for the Fastify server.
@@ -53,7 +56,7 @@ import { HealthController } from '../Controllers/health.Controller';
  * @param {Object} options - Options for the route.
  */
 async function healthRoutes(fastify: FastifyInstance) {
-    fastify.get("/", HealthController.Health);
+    fastify.post("/", { preHandler:uploadMiddleware } ,HealthController.Health);
 }
 
 export default healthRoutes;                
@@ -71,61 +74,55 @@ export default healthRoutes;
  * the file details in the request object.
  */
 
-import multer from 'multer';
-import { Request } from 'express';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import fs from 'fs';
 import path from 'path';
-
-type CustomFileFilterCallback = (error: Error | null, acceptFile: boolean) => void;
-
-// Define the upload directory
-const uploadDir = path.join(__dirname, '..', 'uploads');
-console.log(uploadDir);
-
-// Ensure the uploads directory exists; if not, create it.
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+import '@fastify/multipart';
+declare module 'fastify' {
+  interface FastifyRequest {
+    uploadedFile?: {
+      filename: string;
+      mimetype: string;
+      size: any;
+    };
+  }
 }
 
-// Configure storage settings for multer
-const storage = multer.diskStorage({
-  destination: (
-    req: Request,
-    file: Express.Multer.File,
-    cb: (error: Error | null, destination: string) => void
-  ) => {
-    cb(null, uploadDir); // Set upload destination folder
-  },
-  filename: (
-    req: Request,
-    file: Express.Multer.File,
-    cb: (error: Error | null, filename: string) => void
-  ) => {
-    cb(null, Date.now() + "-" + file.originalname); // Rename file with timestamp to avoid conflicts
-  },
-});
+const uploadMiddleware = async (req: FastifyRequest, reply: FastifyReply) => {
+  try {
+    // Check if the request is multipart
+    if (!req.isMultipart()) {
+      return reply.status(400).send({ error: "Request is not multipart" });
+    }
 
-// Define a filter to allow only image files
-const fileFilter = (
-  req: Request,
-  file: Express.Multer.File,
-  callback: CustomFileFilterCallback,
-) => {
-  if (file.mimetype.startsWith("image/")) {
-    callback(null, true); // Accept the file
-  } else {
-    callback(new Error("Only images are allowed!"), false); // Reject non-image files
+    const data = await req.file();
+    if (!data) {
+      return reply.status(400).send({ error: "No file uploaded" });
+    }
+    const uniqueFilename = Date.now() +'_'+data.filename;;
+
+    // Define the file upload path
+    const uploadDir = path.join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true }); // Create uploads folder if not exists
+    }
+
+    const filePath = path.join(uploadDir, uniqueFilename);
+
+    await fs.promises.writeFile(filePath, await data.toBuffer());
+
+    req.uploadedFile = {
+      filename: data.filename,
+      mimetype: data.mimetype,
+      size: data.file.bytesRead
+    };
+
+  } catch (err) {
+    reply.status(500).send({ error: "File upload failed", details: err.message });
   }
 };
-
-// Configure multer with storage, file filtering, and size limits
-const upload = multer({
-  storage, // Use defined storage settings
-  fileFilter, // Apply file type filter
-  limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 2MB
-});
-
-export default upload;
+                
+export default uploadMiddleware;           
 
                 ` },
         {
@@ -134,7 +131,7 @@ export default upload;
             content:
                 `
 import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "../../config/dbConfig";
+import { sequelize } from "../config/dbConfig";
 
 // Define TypeScript interface for model attributes
 interface ExampleAttributes {
@@ -489,25 +486,14 @@ export function hasRequiredFields(
         {
             folder : 'Middleware', name : 'jwtToken.ts', content :
             `'use strict'
-// jwtHelper.js
-/**
- * Creates a JWT token based on the provided payload.
- * 
- * @param {Request} req - The Fastify request object.
- * @param {Object} payload - The payload to be signed into the token.
- * @returns {Promise<string>} A promise that resolves to the created token.
- */
+// jwtHelper.ts
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
 import ResponseHandler from '../Utils/responseHandler';
 import { Codes, Messages } from '../Utils/httpCodesAndMessages';
+import { FastifyReply, FastifyRequest } from 'fastify/fastify';
 
 const SECRET_KEY: string =
   process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD(';
-
-interface TokenOptions {
-  expiresIn?: string | number;
-}
 
 interface ValidateTokenResult {
   valid: boolean;
@@ -522,8 +508,8 @@ class JWTHelper {
    * @param options - Options for token creation, such as 'expiresIn'
    * @returns The created JWT token as a string
    */
-  static createToken(payload: object, options: TokenOptions = {}): string {
-    const tokenOptions: TokenOptions = {};
+  static createToken(payload: object, options: any = {}): string {
+    const tokenOptions: any = {};
     if (options.expiresIn) {
       tokenOptions.expiresIn = options.expiresIn;
     }
@@ -553,7 +539,7 @@ class JWTHelper {
    * @param res - The Express response object
    * @param next - The next middleware function
    */
-  static tokenMiddleware(req: Request, res: Response, next: NextFunction): void {
+  static tokenMiddleware(req: FastifyRequest, res: FastifyReply, done: any ): void {
     const authHeader = req.headers['authorization'];
     const token = authHeader ? authHeader.split(' ')[1] : undefined;
     if (!token) {
@@ -571,7 +557,7 @@ class JWTHelper {
       // Attach the decoded payload to the request object.
       // If you want to use strong typing for req.user, extend Express.Request interface.
       (req as any).user = decoded;
-      next();
+      done();
     } else {
       if (error === 'Token has expired') {
         ResponseHandler.sendError(
@@ -592,8 +578,8 @@ class JWTHelper {
     }
   }
 }
-
 export default JWTHelper;
+
             `
         },
         {
@@ -613,6 +599,8 @@ class ResponseHandler {
     statusCode: number = Codes.OK,
     message: string = Messages.OK
   ): void {
+    if(res.send) return;
+
     res.status(statusCode).send({
       success: true,
       status: statusCode,
@@ -627,6 +615,8 @@ class ResponseHandler {
     statusCode: number = Codes.INTERNAL_SERVER_ERROR,
     message: string = Messages.INTERNAL_SERVER_ERROR
   ): void {
+    if(res.send) return;
+
     res.status(statusCode).send({
       success: false,
       status: statusCode,
@@ -642,6 +632,7 @@ export default ResponseHandler;
         {
             folder: '', name: index, content:
                 `
+
 /**
  * Initializes the Fastify server with logging enabled.
  * Loads environment variables from a .env file.
@@ -662,8 +653,8 @@ import fastifyJwt from '@fastify/jwt';
 import fastifyStatic from '@fastify/static';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import https from 'https';
-import { connectDB } from '../config/dbConfig';
-import { initModels } from "../config/initModels";
+import { connectDB } from './config/dbConfig';
+import { initModels } from "./config/initModels";
 
 // Load environment variables from .env file
 dotenv.config({ path: '.env.example' });
@@ -678,9 +669,14 @@ connectDB(); // Connecting to the database
 // Model initialization
 initModels(); // Initializing models
 
-// Create Fastify instance with logging enabled
-const server: FastifyInstance = fastify({ logger: true });
-
+// Create Fastify instance with logging enabled and https options if enabled
+const server: FastifyInstance = fastify({
+  logger: true,
+  https: process.env.IS_HTTPS === 'true' ? {
+    key: fs.readFileSync(process.env.KEYPATH as string),
+    cert: fs.readFileSync(process.env.CARTPATH as string)
+  } : undefined
+});
 // Register plugins
 server.register(cors);
 server.register(formbody);
@@ -731,28 +727,14 @@ const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8096;
 
 // Function to start the server
 const startServer = async (): Promise<void> => {
-  try {
-    if (process.env.IS_HTTPS === 'true') {
-      // Read HTTPS certificate and key files
-      const cert = fs.readFileSync(process.env.CARTPATH as string);
-      const key = fs.readFileSync(process.env.KEYPATH as string);
-      
-      // Start HTTPS server by passing HTTPS options to listen
-      await server.listen({ port: PORT, https: { key, cert } });
-      console.log('HTTPS Server started on port:' PORT);
-    } else {
-      // Start HTTP server
-      await server.listen({ port: PORT });
-      console.log('HTTP Server started on port:' PORT);
-    }
-  } catch (err) {
-    server.log.error(err);
-    process.exit(1);
-  }
+
+  // Start HTTPS server
+  await server.listen({ port: PORT });
+  console.log('HTTPS Server started on port:', PORT);
 };
 
 // Start the server
-startServer();
+startServer();                
 
                 ` },
         {
@@ -840,7 +822,7 @@ JWT_SECRET=` }, // Empty .env file
 node_modules
 dist
 package-lock.json
-
+env.example
 ` 
 },
 {
@@ -910,5 +892,5 @@ If you encounter issues, feel free to reach out at ashrafchauhan567@gmail.com or
 
         ` }
     ]},
-    cmd : 'npm install @fastify/formbody @fastify/cors @fastify/multipart @fastify/static bcryptjs config cors mongoose multer typescript @types/cors @types/jsonwebtoken @types/multer @types/node concurrently @types/config @types/bcryptjs jsonwebtoken http-errors @types/sequelize dotenv fastify fastify-jwt fs @fastify/jwt sequelize mysql2 '
+    cmd : 'npm install @fastify/formbody @fastify/cors @fastify/multipart @fastify/static bcryptjs config cors mongoose multer typescript @types/cors @types/jsonwebtoken @types/multer @types/node concurrently @types/config @types/bcryptjs jsonwebtoken http-errors @types/sequelize dotenv fastify fastify-jwt fs ts-node @fastify/jwt sequelize mysql2'
 }

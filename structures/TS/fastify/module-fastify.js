@@ -290,7 +290,7 @@ export default ${name}Routes;
     sfiles:(name) =>{
       return [{folder: 'Models', name: `${name}.Model.ts`, content:`
 import { DataTypes, Model, Optional } from "sequelize";
-import { sequelize } from "../../config/dbConfig"; // Ensure correct path
+import { sequelize } from "../config/dbConfig"; // Ensure correct path
 
 // ✅ Define TypeScript Interface for Model Attributes
 interface ${name}Attributes {
@@ -468,7 +468,7 @@ import { Codes, Messages } from '../Utils/httpCodesAndMessages';
 // Importing the response handler utility for managing API responses
 import ResponseHandler from '../Utils/responseHandler';
 import { FastifyRequest, FastifyReply } from 'fastify';
-import ${name}Model from '../Models/${name}.model';
+import ${name}Model from '../Models/${name}.Model';
 
 export const ${name}Controller = {
   // Health check endpoint
@@ -565,6 +565,7 @@ export const ${name}Controller = {
  * It imports the ${name}Controller and sets up routes for creating, getting, updating, and deleting ${name}s.
  */
 
+import { FastifyInstance } from 'fastify/fastify';
 import { ${name}Controller } from '../Controllers/${name}.Controller';
 
 /**

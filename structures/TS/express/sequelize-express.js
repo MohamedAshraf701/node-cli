@@ -68,11 +68,10 @@ import { Request } from 'express';
 import fs from 'fs';
 import path from 'path';
 
-type CustomFileFilterCallback = (error: Error | null, acceptFile: boolean) => void;
+import { FileFilterCallback } from 'multer';
 
 // Define the upload directory
 const uploadDir = path.join(__dirname, '..', 'uploads');
-console.log(uploadDir);
 
 // Ensure the uploads directory exists; if not, create it.
 if (!fs.existsSync(uploadDir)) {
@@ -101,12 +100,12 @@ const storage = multer.diskStorage({
 const fileFilter = (
   req: Request,
   file: Express.Multer.File,
-  callback: CustomFileFilterCallback,
+  callback: FileFilterCallback,
 ) => {
   if (file.mimetype.startsWith("image/")) {
     callback(null, true); // Accept the file
   } else {
-    callback(new Error("Only images are allowed!"), false); // Reject non-image files
+    callback(null, false); // Reject non-image files
   }
 };
 
@@ -125,8 +124,8 @@ export default upload;
             name: 'example.Model.ts',
             content:
                 `
-const { DataTypes } = require('sequelize'); // Importing DataTypes from sequelize for defining model attributes
-const { sequelize } = require('../config/dbConfig'); // Importing sequelize instance from dbConfig
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/dbConfig"; // Ensure correct path
 
 // Defining the example model with its structure and rules
 const example = sequelize.define('example', {
@@ -271,7 +270,7 @@ export default httpCodesAndMessages;
         {
             folder : 'Utils', name : 'validations.ts', content :
             `
-// Validation.js
+// Validation.ts
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 international phone number format
 
@@ -338,6 +337,110 @@ export function hasRequiredFields(
             `
         },
         {
+          folder : 'Middleware', name : 'jwtToken.ts', content :
+          `'use strict'
+// jwtHelper.ts
+import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
+import ResponseHandler from '../Utils/responseHandler';
+import { Codes, Messages } from '../Utils/httpCodesAndMessages';
+
+const SECRET_KEY: string =
+process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD(';
+
+interface TokenOptions {
+  expiresIn?: number | '${number}s' | '${number}m' | '${number}h' | '${number}d' | undefined;
+}
+
+interface ValidateTokenResult {
+valid: boolean;
+decoded?: any;
+error?: string;
+}
+
+class JWTHelper {
+/**
+ * Create a new JWT token
+ * @param payload - The payload to include in the token
+ * @param options - Options for token creation, such as 'expiresIn'
+ * @returns The created JWT token as a string
+ */
+static createToken(payload: object, options: TokenOptions = {}): string {
+  const tokenOptions: TokenOptions = {};
+  if (options.expiresIn) {
+    tokenOptions.expiresIn = options.expiresIn;
+  }
+  return jwt.sign(payload, SECRET_KEY, tokenOptions);
+}
+
+/**
+ * Validate a JWT token
+ * @param token - The token to validate
+ * @returns An object containing a validity flag, and either the decoded token or an error message
+ */
+static validateToken(token: string): ValidateTokenResult {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    return { valid: true, decoded };
+  } catch (error: any) {
+    if (error.name === 'TokenExpiredError') {
+      return { valid: false, error: 'Token has expired' };
+    }
+    return { valid: false, error: error.message };
+  }
+}
+
+/**
+ * Middleware to validate JWT token in requests
+ * @param req - The Express request object
+ * @param res - The Express response object
+ * @param next - The next middleware function
+ */
+static tokenMiddleware(req: Request, res: Response, next: NextFunction): void {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader ? authHeader.split(' ')[1] : undefined;
+  if (!token) {
+    ResponseHandler.sendError(
+      res,
+      'No token provided',
+      Codes.UNAUTHORIZED,
+      Messages.UNAUTHORIZED
+    );
+    return;
+  }
+
+  const { valid, decoded, error } = JWTHelper.validateToken(token);
+  if (valid) {
+    // Attach the decoded payload to the request object.
+    // If you want to use strong typing for req.user, extend Express.Request interface.
+    (req as any).user = decoded;
+    next();
+  } else {
+    if (error === 'Token has expired') {
+      ResponseHandler.sendError(
+        res,
+        'Token has expired',
+        Codes.UNAUTHORIZED,
+        Messages.UNAUTHORIZED
+      );
+      return;
+    }
+    ResponseHandler.sendError(
+      res,
+      'Invalid token',
+      Codes.UNAUTHORIZED,
+      Messages.UNAUTHORIZED
+    );
+    return;
+  }
+}
+}
+
+export default JWTHelper;
+          
+          `
+      },
+        {
             folder: 'Utils', name: 'responseHandler.ts', content:
                 `
 import { Response } from 'express';
@@ -350,6 +453,8 @@ class ResponseHandler {
     statusCode: number = Codes.OK,
     message: string = Messages.OK
   ): void {
+    if(res.headersSent) return;
+    
     res.status(statusCode).json({
       success: true,
       status: statusCode,
@@ -364,6 +469,8 @@ class ResponseHandler {
     statusCode: number = Codes.INTERNAL_SERVER_ERROR,
     message: string = Messages.INTERNAL_SERVER_ERROR
   ): void {
+    if(res.headersSent) return;
+
     res.status(statusCode).json({
       success: false,
       status: statusCode,
@@ -386,8 +493,8 @@ import express, { NextFunction, Response, Request } from "express";
 import dotenv from 'dotenv'
 import cors from 'cors'
 import bodyParser from "body-parser";
-import { connectDB } from "../config/dbConfig";
-import { initModels } from "../config/initModels";
+import { connectDB } from "./config/dbConfig";
+import { initModels } from "./config/initModels";
 import fs from 'fs'
 import createHttpError from "http-errors";
 
@@ -419,7 +526,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 apiV1Router.use('/uploads', express.static('uploads')); // Serving static files from 'uploads' directory
 
 // Importing route for health checks
-import RouterHealth from './routes/health.Route'
+import RouterHealth from './Routes/health.Route'
 
 // Registering health check route with API v1 router
 apiV1Router.use("/health", RouterHealth);
@@ -547,7 +654,7 @@ JWT_SECRET=` }, // Empty .env file
 node_modules
 dist
 package-lock.json
-
+.env.example
 ` 
 } ,
 {

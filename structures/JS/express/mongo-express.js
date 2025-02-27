@@ -362,8 +362,8 @@ module.exports = {
             `'use strict'
 // jwtHelper.js
 const jwt = require('jsonwebtoken');
-const ResponseHandler = require('./responseHandler');
-const { Codes, Messages } = require('./httpCodesAndMessages');
+const ResponseHandler = require('../Utils/responseHandler');
+const { Codes, Messages } = require('../Utils/httpCodesAndMessages');
 
 // Secret key for signing tokens
 const SECRET_KEY = process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD(';

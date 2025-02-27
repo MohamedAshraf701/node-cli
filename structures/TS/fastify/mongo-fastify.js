@@ -6,30 +6,35 @@ module.exports = {
             name: 'health.Controller.ts',
             content:
                 `
-  // Importing HTTP status codes and messages from utilities
-  import { Codes, Messages } from '../Utils/httpCodesAndMessages';
-  // Importing the response handler utility for managing API responses
-  import ResponseHandler from '../Utils/responseHandler';
-  import { FastifyRequest, FastifyReply } from 'fastify';
-  
-  export const HealthController = {
+// Importing HTTP status codes and messages from utilities
+import { Codes, Messages } from '../Utils/httpCodesAndMessages';
+// Importing the response handler utility for managing API responses
+import ResponseHandler from '../Utils/responseHandler';
+import { FastifyRequest, FastifyReply } from 'fastify';
+
+export const HealthController = {
   // Health check endpoint
   Health: async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
-      try {
-          // Send a success response indicating the health status
-          ResponseHandler.sendSuccess(res, "health Status", Codes.OK, Messages.OK);
-      } catch (error: any) {
-        // Handle errors by sending an error response
-        ResponseHandler.sendError(
-          res,
-          error,
-          Codes.INTERNAL_SERVER_ERROR,
-          Messages.INTERNAL_SERVER_ERROR
-        );
-      }
-    }
-  };
+    try {
+      const file = req.uploadedFile; // ✅ Get the uploaded file details
 
+      if (!file) {
+        return ResponseHandler.sendError(res, 'No file uploaded', Codes.BAD_REQUEST, Messages.BAD_REQUEST);
+      }
+      // Send a success response indicating the health status
+      ResponseHandler.sendSuccess(res, "health Status", Codes.OK, Messages.OK);
+    } catch (error: any) {
+      // Handle errors by sending an error response
+      ResponseHandler.sendError(
+        res,
+        error,
+        Codes.INTERNAL_SERVER_ERROR,
+        Messages.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+};
+                
                 ` },
         {
             folder: 'Routes',
@@ -43,7 +48,7 @@ module.exports = {
 
 import { HealthController } from '../Controllers/health.Controller';
 import { FastifyInstance } from 'fastify';
-
+import uploadMiddleware from '../Middleware/fileUpload';
 /**
  * This function is used to define routes for the Fastify server.
  * It sets up a GET route for the health check endpoint.
@@ -52,10 +57,11 @@ import { FastifyInstance } from 'fastify';
  * @param {Object} options - Options for the route.
  */
 async function healthRoutes(fastify: FastifyInstance) {
-    fastify.get("/", HealthController.Health);
+    fastify.post("/", {preHandler: uploadMiddleware},HealthController.Health);
 }
 
 export default healthRoutes;
+                               
                 ` },
         {
             folder: 'Models',
@@ -337,7 +343,7 @@ export default httpCodesAndMessages;
         {
             folder : 'Utils', name : 'validations.ts', content :
             `
-// Validation.js
+// Validation.ts
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 international phone number format
 
@@ -407,16 +413,12 @@ export function hasRequiredFields(
             `'use strict'
 // jwtHelper.ts
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
 import ResponseHandler from '../Utils/responseHandler';
 import { Codes, Messages } from '../Utils/httpCodesAndMessages';
+import { FastifyReply, FastifyRequest } from 'fastify/fastify';
 
 const SECRET_KEY: string =
   process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD(';
-
-interface TokenOptions {
-  expiresIn?: string | number;
-}
 
 interface ValidateTokenResult {
   valid: boolean;
@@ -431,8 +433,8 @@ class JWTHelper {
    * @param options - Options for token creation, such as 'expiresIn'
    * @returns The created JWT token as a string
    */
-  static createToken(payload: object, options: TokenOptions = {}): string {
-    const tokenOptions: TokenOptions = {};
+  static createToken(payload: object, options: any = {}): string {
+    const tokenOptions: any = {};
     if (options.expiresIn) {
       tokenOptions.expiresIn = options.expiresIn;
     }
@@ -462,7 +464,7 @@ class JWTHelper {
    * @param res - The Express response object
    * @param next - The next middleware function
    */
-  static tokenMiddleware(req: Request, res: Response, next: NextFunction): void {
+  static tokenMiddleware(req: FastifyRequest, res: FastifyReply, done: any ): void {
     const authHeader = req.headers['authorization'];
     const token = authHeader ? authHeader.split(' ')[1] : undefined;
     if (!token) {
@@ -480,7 +482,7 @@ class JWTHelper {
       // Attach the decoded payload to the request object.
       // If you want to use strong typing for req.user, extend Express.Request interface.
       (req as any).user = decoded;
-      next();
+      done();
     } else {
       if (error === 'Token has expired') {
         ResponseHandler.sendError(
@@ -523,6 +525,8 @@ class ResponseHandler {
     statusCode: number = Codes.OK,
     message: string = Messages.OK
   ): void {
+    if(res.sent) return;
+
     res.status(statusCode).send({
       success: true,
       status: statusCode,
@@ -537,6 +541,8 @@ class ResponseHandler {
     statusCode: number = Codes.INTERNAL_SERVER_ERROR,
     message: string = Messages.INTERNAL_SERVER_ERROR
   ): void {
+    if(res.sent) return;
+
     res.status(statusCode).send({
       success: false,
       status: statusCode,
@@ -552,15 +558,16 @@ export default ResponseHandler;
         {
             folder: '', name: index, content:
                 `
+
 /**
  * Initializes the Fastify server with logging enabled.
  * Loads environment variables from a .env file.
- * Registers necessary plugins for CORS, form body parsing, JWT authentication, multipart file uploads, and static file serving.
- * Sets up a custom authentication decorator for JWT verification.
- * Configures the database connection.
- * Registers routes for health checks and sets up error handlers for not found and general errors.
- * Starts the server on a specified port, using HTTPS if enabled.
- */
+ * Registers necessary plugins for CORS, form body parsing, JWT authentication, multipart file uploads, and static file  serving.
+* Sets up a custom authentication decorator for JWT verification.
+* Configures the database connection.
+* Registers routes for health checks and sets up error handlers for not found and general errors.
+* Starts the server on a specified port, using HTTPS if enabled.
+*/
 import fastify from 'fastify';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -580,11 +587,17 @@ dotenv.config({ path: '.env.example' });
 import authenticateMiddleware from './Middleware/jwtToken';
 
 // Import and configure the database connection
-import dbConfig from '../config/dbConfig';
+import dbConfig from './config/dbConfig';
 dbConfig();
 
-// Create Fastify instance with logging enabled
-const server: FastifyInstance = fastify({ logger: true });
+// Create Fastify instance with logging enabled and https options if enabled
+const server: FastifyInstance = fastify({
+  logger: true,
+  https: process.env.IS_HTTPS === 'true' ? {
+    key: fs.readFileSync(process.env.KEYPATH as string),
+    cert: fs.readFileSync(process.env.CARTPATH as string)
+  } : undefined
+});
 
 // Register plugins
 server.register(cors);
@@ -604,7 +617,6 @@ server.register(fastifyStatic, {
   root: path.join(__dirname, 'uploads'),
   prefix: '/api/v1/uploads/',
 });
-
 
 // Import routes
 import RoutesHealth from './Routes/health.Route';
@@ -636,28 +648,14 @@ const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8096;
 
 // Function to start the server
 const startServer = async (): Promise<void> => {
-  try {
-    if (process.env.IS_HTTPS === 'true') {
-      // Read HTTPS certificate and key files
-      const cert = fs.readFileSync(process.env.CARTPATH as string);
-      const key = fs.readFileSync(process.env.KEYPATH as string);
-      
-      // Start HTTPS server by passing HTTPS options to listen
-      await server.listen({ port: PORT, https: { key, cert } });
-      console.log('HTTPS Server started on port:' PORT);
-    } else {
-      // Start HTTP server
-      await server.listen({ port: PORT });
-      console.log('HTTP Server started on port:' PORT);
-    }
-  } catch (err) {
-    server.log.error(err);
-    process.exit(1);
-  }
+
+  // Start HTTPS server
+  await server.listen({ port: PORT });
+  console.log('HTTPS Server started on port:', PORT);
 };
 
 // Start the server
-startServer();
+startServer();            
 
                 ` },
         {
@@ -702,7 +700,7 @@ export default async () => {
   // Event listener for SIGINT signal (typically sent from the terminal).
   // This is used to handle graceful shutdown of the application.
   process.on('SIGINT', () => {
-    mongoose.connection.close(() => { // Close the MongoDB connection.
+    mongoose.connection.close(true).then(() => { // Close the MongoDB connection.
       console.log(
         'Mongoose connection is disconnected due to app termination...'
       );
@@ -715,6 +713,7 @@ export default async () => {
             folder: 'Middleware', name: 'fileUpload.ts',
             content:
                 `
+
 /**
  * This module exports a middleware function for handling file uploads.
  * It uses the 'fs' and 'path' modules to write the uploaded file to a directory.
@@ -726,45 +725,52 @@ export default async () => {
 import { FastifyReply, FastifyRequest } from 'fastify';
 import fs from 'fs';
 import path from 'path';
-
+import '@fastify/multipart';
 declare module 'fastify' {
   interface FastifyRequest {
     uploadedFile?: {
       filename: string;
       mimetype: string;
-      // size: any;
+      size: any;
     };
   }
 }
 
 const uploadMiddleware = async (req: FastifyRequest, reply: FastifyReply) => {
   try {
-       // Check if the request is multipart
-       if (!req.isMultipart()) {
-        return reply.status(400).send({ error: "Request is not multipart" });
-      }
+    // Check if the request is multipart
+    if (!req.isMultipart()) {
+      return reply.status(400).send({ error: "Request is not multipart" });
+    }
 
-      const data = await req.file();
-      if (!data) {
-          return reply.status(400).send({ error: "No file uploaded" });
-      }
+    const data = await req.file();
+    if (!data) {
+      return reply.status(400).send({ error: "No file uploaded" });
+    }
+    const uniqueFilename = Date.now() +'_'+data.filename;
 
-      const filePath = path.join(__dirname, '..',  "uploads", data.filename);
+    // Define the file upload path
+    const uploadDir = path.join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true }); // Create uploads folder if not exists
+    }
 
-      await fs.promises.writeFile(filePath, await data.toBuffer());
+    const filePath = path.join(uploadDir, uniqueFilename);
 
-      req.uploadedFile = {
-          filename: data.filename,
-          mimetype: data.mimetype,
-          // size: data.file.size
-      };
+    await fs.promises.writeFile(filePath, await data.toBuffer());
+
+    req.uploadedFile = {
+      filename: data.filename,
+      mimetype: data.mimetype,
+      size: data.file.bytesRead
+    };
 
   } catch (err) {
-      reply.status(500).send({ error: "File upload failed", details: err.message });
+    reply.status(500).send({ error: "File upload failed", details: err.message });
   }
 };
-
-export default uploadMiddleware;
+                
+export default uploadMiddleware;           
 
                 ` },
                 {
@@ -806,7 +812,7 @@ JWT_SECRET=` } ,
 node_modules
 dist
 package-lock.json
-
+.env.example
 ` 
 },
       {
@@ -876,5 +882,5 @@ If you encounter issues, feel free to reach out at ashrafchauhan567@gmail.com or
 
             ` } // Empty .env file
     ]},
-    cmd : 'npm install @fastify/formbody @fastify/cors @fastify/static bcryptjs config fastify fastify-jwt jsonwebtoken mongoose multer typescript dotenv fastify fastify-jwt fs @fastify/jwt mongoose @fastify/multipart @types/bcryptjs @types/config @types/jsonwebtoken @types/mongoose @types/multer concurrently'
+    cmd : 'npm install @fastify/formbody @fastify/cors @fastify/static bcryptjs config fastify fastify-jwt jsonwebtoken mongoose multer typescript dotenv fastify fastify-jwt fs ts-node @fastify/jwt mongoose @fastify/multipart @types/bcryptjs @types/config @types/jsonwebtoken @types/mongoose @types/multer concurrently'
 }

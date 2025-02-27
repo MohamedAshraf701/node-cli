@@ -15,9 +15,7 @@ import { Request, Response, NextFunction } from 'express';
 export default {
     // Health check endpoint
     Health: (req: Request, res: Response, next: NextFunction): void => {
-        try {
-            console.log(req.file);
-            
+        try {            
             // Send a success response indicating the health status
             ResponseHandler.sendSuccess(res, "health Status", Codes.OK, Messages.OK);
             return;
@@ -33,7 +31,6 @@ export default {
         }
     }
 };
-
                 ` },
         {
             folder: 'Routes',
@@ -199,11 +196,8 @@ const ExampleSchema: Schema<IExample> = new Schema<IExample>(
   }
 );
 
-// Add index on emailField for uniqueness
-ExampleSchema.index({ emailField: 1 }, { unique: true });
-
 // Middleware example (pre-save hook for validation)
-ExampleSchema.pre<IExample>('save', function (next) {
+ExampleSchema.pre<IExample>('save', function (next:  (err?: mongoose.CallbackError) => void) {
   console.log('Saving document...');
   next();
 });
@@ -403,7 +397,6 @@ export function hasRequiredFields(
         {
             folder : 'Middleware', name : 'jwtToken.ts', content :
             `'use strict'
-// jwtHelper.js
 // jwtHelper.ts
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
@@ -414,7 +407,7 @@ const SECRET_KEY: string =
   process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD(';
 
 interface TokenOptions {
-  expiresIn?: string | number;
+  expiresIn?: number | '${number}s' | '${number}m' | '${number}h' | '${number}d' | undefined;
 }
 
 interface ValidateTokenResult {
@@ -518,6 +511,8 @@ class ResponseHandler {
     statusCode: number = Codes.OK,
     message: string = Messages.OK
   ): void {
+    if(res.headersSent) return;     
+
     res.status(statusCode).json({
       success: true,
       status: statusCode,
@@ -532,6 +527,8 @@ class ResponseHandler {
     statusCode: number = Codes.INTERNAL_SERVER_ERROR,
     message: string = Messages.INTERNAL_SERVER_ERROR
   ): void {
+    if(res.headersSent) return;
+
     res.status(statusCode).json({
       success: false,
       status: statusCode,
@@ -551,7 +548,7 @@ import express, { NextFunction, Response, Request } from "express";
 import dotenv from 'dotenv'
 import cors from 'cors'
 import bodyParser from "body-parser";
-import connectDB from "../config/dbConfig";
+import connectDB from "./config/dbConfig";
 import fs from 'fs'
 import createHttpError from "http-errors";
 
@@ -666,7 +663,7 @@ export default async () => {
   // Event listener for SIGINT signal (typically sent from the terminal).
   // This is used to handle graceful shutdown of the application.
   process.on('SIGINT', () => {
-    mongoose.connection.close(() => { // Close the MongoDB connection.
+    mongoose.connection.close(true).then(() => { // Close the MongoDB connection.
       console.log(
         'Mongoose connection is disconnected due to app termination...'
       );
@@ -692,7 +689,7 @@ import { Request } from 'express';
 import fs from 'fs';
 import path from 'path';
 
-type CustomFileFilterCallback = (error: Error | null, acceptFile: boolean) => void;
+import { FileFilterCallback } from 'multer';
 
 // Define the upload directory
 const uploadDir = path.join(__dirname, '..', 'uploads');
@@ -725,12 +722,12 @@ const storage = multer.diskStorage({
 const fileFilter = (
   req: Request,
   file: Express.Multer.File,
-  callback: CustomFileFilterCallback,
+  callback: FileFilterCallback,
 ) => {
   if (file.mimetype.startsWith("image/")) {
     callback(null, true); // Accept the file
   } else {
-    callback(new Error("Only images are allowed!"), false); // Reject non-image files
+    callback(null, false); // Reject non-image files
   }
 };
 
@@ -746,15 +743,15 @@ export default upload;
                 ` },
                 {
                   folder: '', name: '.env.example', content:
-                      `PORT=3000
-      MONGODB_URI=mongodb://localhost:27017/
-      DB_NAME=test
-      DB_USER=
-      DB_PASS=
-      IS_HTTPS=false
-      KEYPATH=
-      CARTPATH=
-      JWT_SECRET=` } ,
+`PORT=3000
+MONGODB_URI=mongodb://localhost:27017/
+DB_NAME=test
+DB_USER=
+DB_PASS=
+IS_HTTPS=false
+KEYPATH=
+CARTPATH=
+JWT_SECRET=` } ,
                 {
                   folder: '', name: 'tsconfig.json', content:
                       `
@@ -783,7 +780,7 @@ export default upload;
 node_modules
 dist
 package-lock.json
-
+.env.example
       ` 
     } ,
       {
@@ -853,5 +850,5 @@ If you encounter issues, feel free to reach out at ashrafchauhan567@gmail.com or
 
             ` } // Empty .env file
     ]},
-    cmd : 'npm install @types/bcryptjs @types/config body-parser typescript cors dotenv express jsonwebtoken multer @types/express @types/gravatar fs http-errors https @types/jsonwebtoken @types/mongoose @types/multer @types/node concurrently @types/http-errors http-errors'
+    cmd : 'npm install @types/bcryptjs @types/config @types/cors body-parser typescript cors dotenv express jsonwebtoken multer @types/express @types/gravatar fs http-errors https @types/jsonwebtoken @types/mongoose @types/multer @types/node concurrently @types/http-errors http-errors'
 }
