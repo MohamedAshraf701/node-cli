@@ -406,10 +406,6 @@ import { Codes, Messages } from '../Utils/httpCodesAndMessages';
 const SECRET_KEY: string =
   process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD(';
 
-interface TokenOptions {
-  expiresIn?: number | '${number}s' | '${number}m' | '${number}h' | '${number}d' | undefined;
-}
-
 interface ValidateTokenResult {
   valid: boolean;
   decoded?: any;
@@ -423,8 +419,8 @@ class JWTHelper {
    * @param options - Options for token creation, such as 'expiresIn'
    * @returns The created JWT token as a string
    */
-  static createToken(payload: object, options: TokenOptions = {}): string {
-    const tokenOptions: TokenOptions = {};
+  static createToken(payload: object, options: any = {}): string {
+    const tokenOptions: any = {};
     if (options.expiresIn) {
       tokenOptions.expiresIn = options.expiresIn;
     }
