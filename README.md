@@ -1,12 +1,12 @@
 # node-initdb
 
-node-initdb is a CLI tool for initializing database configurations and structures in Node.js projects.
+node-initdb is a CLI tool for initializing project configurations and structures in Node.js projects. **It now requires you to select a database, a web framework, and a language (JavaScript or TypeScript) for the tool to work.** In addition to setting up your chosen database and framework, node-initdb now supports file upload functionality and JWT-based authentication.
 
 ![Node InitDB Plugin Demo](https://github.com/MohamedAshraf701/node-cli/blob/main/example.gif)
 
 ## Installation
 
-You can install node-initdb globally using npm:
+Install node-initdb globally using npm:
 
 ```bash
 npm install -g node-initdb
@@ -14,51 +14,57 @@ npm install -g node-initdb
 
 ## Usage
 
-To use node-initdb, navigate to your project directory and run one of the following commands based on your database choice:
+Navigate to your project directory and run node-initdb with the appropriate options. **You must choose one option each for:**
 
--	`-m` / `--mongo` : Add MongoDB configuration and files for the module.
--	`-s` / `--seque` : Add Sequelize configuration and files for the module.
--	`-e` / `--express` : Add Express configuration and files for the module.
--	`-f` / `--fastify` : Add Fastify configuration and files for the module.
--	`-j` / `--javascript` : Add Javascript configuration and files for the module.
--	`-t` / `--typescript` : Add Typescript configuration and files for the module.
--	`-y` / `--yes` : Skip interactive prompts and use default values for module creation.
+- **Database:**  
+  - MongoDB: `--mongo` or `-m`
+  - Sequelize: `--seque` or `-s`
 
-### Initialize Sequelize Structure
+- **Web Framework:**  
+  - Express: `--express` or `-e`
+  - Fastify: `--fastify` or `-f`
 
-to set up Sequelize, Express, and TypeScript with default folders, files, and install necessary packages:
+- **Language:**  
+  - JavaScript: `--javascript` or `-j`
+  - TypeScript: `--typescript` or `-t`
 
-```bash
-node-initdb --seque --express --typescript
-```
+**Important:** All three categories (database, framework, and language) are required. If any one is missing, node-initdb will not run.
 
-```bash
-node-initdb -s -e -t
-```
+Optionally, you can add `--yes` (or `-y`) to skip interactive prompts and use default values.
 
-### Initialize MongoDB Structure
+### Examples
 
-To set up MongoDB, Express, and TypeScript with default folders, files, and install necessary packages:
+- **MongoDB, Express, and TypeScript:**
 
-```bash
-node-initdb --mongo --express --typescript
-```
+  ```bash
+  node-initdb --mongo --express --typescript
+  # or shorthand:
+  node-initdb -m -e -t
+  ```
 
-```bash
-node-initdb -m -e -t
-```
+- **Sequelize, Fastify, and JavaScript:**
+
+  ```bash
+  node-initdb --seque --fastify --javascript
+  # or shorthand:
+  node-initdb -s -f -j
+  ```
 
 ### Add Module Task
 
-To add a new module using `node-add`, run the following command:
+To add a new module using `node-add`, run:
 
 ```bash
-node-add <moduleName> [-m / --mongo] [-s / --seque] / [-e / --express] [-f / --fastify] / [-j / --javascript] [-t / --typescript]
+node-add <moduleName> [options]
 ```
 
-Replace `<moduleName>` with the name of your module. Use the following optional flags:
+Replace `<moduleName>` with your desired module name. Use the same options for database, framework, and language:
 
-### Example
+- Database: `-m` / `--mongo`, `-s` / `--seque`
+- Framework: `-e` / `--express`, `-f` / `--fastify`
+- Language: `-j` / `--javascript`, `-t` / `--typescript`
+
+#### Example
 
 ```bash
 node-add "user" -m -e -t
@@ -66,7 +72,7 @@ node-add "user" -m -e -t
 
 ## Folder Structure
 
-After running the command, node-initdb will create the following folder structure:
+After running node-initdb, your project will have the following structure:
 
 ```
 - config/
@@ -80,30 +86,46 @@ After running the command, node-initdb will create the following folder structur
 
 ## Files Created
 
-node-initdb creates essential files such as controller, route, model files, and configuration files necessary for setting up your chosen database.
+node-initdb creates essential files such as controllers, routes, models, configuration files, and middleware. In addition, the setup includes:
+
+- **File Upload:** Pre-configured file upload functionality.
+- **JWT Authentication:** Setup for JWT-based authentication.
 
 ## Dependencies
 
-node-initdb installs the following dependencies based on your database setup:
+Depending on your chosen configuration, node-initdb installs the following dependencies:
 
-- For Sequelize: `sequelize`, `mysql2`
-- For MongoDB: `mongoose`
-- Middleware and Utilities: `express`, `body-parser`, `cors`, `dotenv`, `fs`, `http-errors`, `https`, `jsonwebtoken`, `multer`
+- **Database:**
+  - **MongoDB:** `mongoose`
+  - **Sequelize:** `sequelize`, `mysql2`
+- **Web Framework:**
+  - **Express:** `express`
+  - **Fastify:** `fastify`
+- **New Features:**
+  - **File Upload:** `multer`
+  - **JWT Authentication:** `jsonwebtoken`
 
 ## Contributing
 
-Contributions are welcome! Fork the repository, make your changes, and submit a pull request. Please follow the existing coding style and guidelines.
+Contributions are welcome! Fork the repository, implement your changes, and submit a pull request. Please follow the existing coding style and guidelines.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Get in touch
+## Get in Touch
 
-If you have any questions, feel free to reach out:
+For questions or support, feel free to reach out:
 
-- Email: ashrafchauhan567@gmail.com
-- GitHub: [@MohamedAshraf701](https://github.com/MohamedAshraf701)
+- **Email:** ashrafchauhan567@gmail.com
+- **GitHub:** [@MohamedAshraf701](https://github.com/MohamedAshraf701)
 
-# Support
-<p><a href="https://www.buymeacoffee.com/ashraf704"> <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="ashraf704" /></a></p><br><br>
+## Support
+
+If you find node-initdb useful, please consider supporting the project:
+
+<p>
+  <a href="https://www.buymeacoffee.com/ashraf704">
+    <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="ashraf704" />
+  </a>
+</p>
