@@ -432,20 +432,31 @@ module.exports = {
             folder: 'Utils', name: 'responseHandler.js', content:
                 `
 /**
- * ResponseHandler class to handle success and error responses.
- * @class
+ * This module provides a utility class for handling HTTP responses in a standardized way.
+ * It includes methods for sending success and error responses with customizable status codes and messages.
+ * 
+ * @module ResponseHandler
  */
+
 const { Codes, Messages } = require("./httpCodesAndMessages");
+
+/**
+ * Represents a utility class for handling HTTP responses.
+ * 
+ * @class ResponseHandler
+ */
 class ResponseHandler {
-  /**
-   * Method to send success response.
-   * @param {Object} res - The response object.
-   * @param {Object} data - The data to be sent in the response.
-   * @param {number} statusCode - The status code of the response. Default is 200.
-   * @param {string} message - The message of the response. Default is 'OK'.
-   * @returns {Object} The success response.
-   */
+    /**
+     * Sends a successful HTTP response.
+     * 
+     * @param {Response} res - The Express response object.
+     * @param {*} data - The data to be sent in the response.
+     * @param {number} [statusCode=Codes.OK] - The HTTP status code for the response.
+     * @param {string} [message=Messages.OK] - The message to be sent in the response.
+     */
   static sendSuccess(res, data, statusCode = Codes.OK, message = Messages.OK) {
+    if(res.sent) return;
+
     return res.code(statusCode).send({
       success: true,
       status: statusCode,
@@ -453,14 +464,15 @@ class ResponseHandler {
       data: data,
     });
   }
-  /**
-   * Method to send error response.
-   * @param {Object} res - The response object.
-   * @param {Object} error - The error object.
-   * @param {number} statusCode - The status code of the response. Default is 500.
-   * @param {string} message - The message of the response. Default is 'Internal Server Error'.
-   * @returns {Object} The error response.
-   */
+
+   /**
+     * Sends an error HTTP response.
+     * 
+     * @param {Response} res - The Express response object.
+     * @param {*} error - The error to be sent in the response.
+     * @param {number} [statusCode=Codes.INTERNAL_SERVER_ERROR] - The HTTP status code for the response.
+     * @param {string} [message=Messages.INTERNAL_SERVER_ERROR] - The message to be sent in the response.
+     */
   static sendError(
     res,
     error,
@@ -468,6 +480,8 @@ class ResponseHandler {
     message = Messages.INTERNAL_SERVER_ERROR
   ) {
     res.code(statusCode).send({
+      if(res.sent) return;
+
       success: false,
       status: statusCode,
       message: message,

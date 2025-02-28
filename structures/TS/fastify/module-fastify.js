@@ -253,7 +253,6 @@ export default {
 };
               ` },
 
-
         {
           folder: 'Routes',
           name: `${name}.Route.ts`,
@@ -283,8 +282,6 @@ async function ${name}Routes(fastify: FastifyInstance) {
 
 export default ${name}Routes;
               ` },
-      
-      
       ]
     },
     sfiles:(name) =>{

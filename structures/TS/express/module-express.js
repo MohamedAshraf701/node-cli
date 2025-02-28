@@ -306,7 +306,6 @@ export const ${name}Controller = {
     }
   }
 };
-
               ` },
 
 
@@ -331,8 +330,6 @@ router.delete("/" ,${name}Controller.delete${name});
 // Exporting the router instance to be used in other parts of the application
 export default router;                
               ` },
-
-
     ]
   },
   sfiles: (name) => {

@@ -576,8 +576,7 @@ class ResponseHandler {
   }
 }
 
-export default ResponseHandler;
-                
+export default ResponseHandler;          
 ` },
         {
             folder: '', name: index, content:

@@ -650,7 +650,6 @@ class ResponseHandler {
 }
 
 export default ResponseHandler;
-
 ` },
         {
             folder: '', name: index, content:

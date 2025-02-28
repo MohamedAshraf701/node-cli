@@ -470,20 +470,31 @@ module.exports = {
             folder: 'Utils', name: 'responseHandler.js', content:
                 `
 /**
- * ResponseHandler class to handle success and error responses.
- * @class
+ * This module provides a utility class for handling HTTP responses in a standardized way.
+ * It includes methods for sending success and error responses with customizable status codes and messages.
+ * 
+ * @module ResponseHandler
  */
+
 const { Codes, Messages } = require("./httpCodesAndMessages");
+
+/**
+ * Represents a utility class for handling HTTP responses.
+ * 
+ * @class ResponseHandler
+ */
 class ResponseHandler {
-  /**
-   * Method to send success response.
-   * @param {Object} res - The response object.
-   * @param {Object} data - The data to be sent in the response.
-   * @param {number} statusCode - The status code of the response. Default is 200.
-   * @param {string} message - The message of the response. Default is 'OK'.
-   * @returns {Object} The success response.
-   */
+ /**
+     * Sends a successful HTTP response.
+     * 
+     * @param {Response} res - The Express response object.
+     * @param {*} data - The data to be sent in the response.
+     * @param {number} [statusCode=Codes.OK] - The HTTP status code for the response.
+     * @param {string} [message=Messages.OK] - The message to be sent in the response.
+     */
   static sendSuccess(res, data, statusCode = Codes.OK, message = Messages.OK) {
+    if(res.sent) return;
+
     return res.code(statusCode).send({
       success: true,
       status: statusCode,
@@ -505,6 +516,8 @@ class ResponseHandler {
     statusCode = Codes.INTERNAL_SERVER_ERROR,
     message = Messages.INTERNAL_SERVER_ERROR
   ) {
+    if(res.sent) return;
+
     res.code(statusCode).send({
       success: false,
       status: statusCode,
