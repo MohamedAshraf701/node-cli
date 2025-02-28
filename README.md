@@ -16,32 +16,36 @@ npm install -g node-initdb
 
 To use node-initdb, navigate to your project directory and run one of the following commands based on your database choice:
 
--	`-m`/`--mongo`: Add MongoDB configuration and files for the module.
--	`-s`/`--seque`: Add Sequelize configuration and files for the module.
--	`-y`/`--yes`: Skip interactive prompts and use default values for module creation.
+-	`-m` / `--mongo` : Add MongoDB configuration and files for the module.
+-	`-s` / `--seque` : Add Sequelize configuration and files for the module.
+-	`-e` / `--express` : Add Express configuration and files for the module.
+-	`-f` / `--fastify` : Add Fastify configuration and files for the module.
+-	`-j` / `--javascript` : Add Javascript configuration and files for the module.
+-	`-t` / `--typescript` : Add Typescript configuration and files for the module.
+-	`-y` / `--yes` : Skip interactive prompts and use default values for module creation.
 
 ### Initialize Sequelize Structure
 
-To set up Sequelize with default folders, files, and install necessary packages:
+to set up Sequelize, Express, and TypeScript with default folders, files, and install necessary packages:
 
 ```bash
-node-initdb --seque
+node-initdb --seque --express --typescript
 ```
 
 ```bash
-node-initdb -s
+node-initdb -s -e -t
 ```
 
 ### Initialize MongoDB Structure
 
-To set up MongoDB with default folders, files, and install necessary packages:
+To set up MongoDB, Express, and TypeScript with default folders, files, and install necessary packages:
 
 ```bash
-node-initdb --mongo 
+node-initdb --mongo --express --typescript
 ```
 
 ```bash
-node-initdb -m
+node-initdb -m -e -t
 ```
 
 ### Add Module Task
@@ -49,7 +53,7 @@ node-initdb -m
 To add a new module using `node-add`, run the following command:
 
 ```bash
-node-add <moduleName> [-m / --mongo] [-s / --seque]
+node-add <moduleName> [-m / --mongo] [-s / --seque] / [-e / --express] [-f / --fastify] / [-j / --javascript] [-t / --typescript]
 ```
 
 Replace `<moduleName>` with the name of your module. Use the following optional flags:
@@ -57,7 +61,7 @@ Replace `<moduleName>` with the name of your module. Use the following optional 
 ### Example
 
 ```bash
-node-add "user" -m
+node-add "user" -m -e -t
 ```
 
 ## Folder Structure
@@ -69,6 +73,7 @@ After running the command, node-initdb will create the following folder structur
 - Controllers/
 - Routes/
 - Models/
+- Middleware/
 - uploads/
 - Utils/
 ```

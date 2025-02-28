@@ -781,69 +781,83 @@ package-lock.json
     } ,
       {
         folder: '', name: 'README.md', content:
-            `# **${Projectname}**
+            `
+# *${Projectname}*
 
-This project was generated using [node-initdb](https://www.npmjs.com/package/node-initdb), a CLI tool for initializing database configurations and folder structures in Node.js projects.
+This project was generated using node-initdb, a CLI tool for initializing database configurations, web framework setups, and project structures in Node.js projects. *This setup requires you to choose one option from each category: a database, a web framework, and a language.*
 
 ## Features
 
-- Preconfigured folders and files for seamless project setup.
-- Supports MongoDB (via Mongoose) and Sequelize (MySQL) integrations.
-- Automatically installs required dependencies for your database.
+- Preconfigured folder structure for streamlined project development.
+- *Database Support:* Choose between MongoDB (via Mongoose) or Sequelize (MySQL).
+- *Web Framework:* Set up with Express or Fastify.
+- *Language Choice:* Develop in JavaScript or TypeScript.
+- Integrated file upload functionality.
+- Pre-configured JWT-based authentication.
+- Automatically installs required dependencies based on your selected configuration.
 
 ## Folder Structure
 
 The following structure was generated:
 
----
+
 - config/
 - Controllers/
 - Routes/
 - Models/
+- Middleware/
 - uploads/
-- Middleware
 - Utils/
----
+
 
 ## Getting Started
 
-### **Setup Project**
+### Setup Project
 
-Use the  \`node-initdb\` command to create the project:
+Use the 'node-initdb' command to create the project. *You must select one option from each category:*
 
-\`\`\`bash
-node-initdb [-m / --mongo] [-s / --seque]
- \`\`\`
+- *Database:*
+  - MongoDB: '-m' or '--mongo'
+  - Sequelize: '-s' or '--seque'
+- *Web Framework:*
+  - Express: '-e' or '--express'
+  - Fastify: '-f' or '--fastify'
+- *Language:*
+  - JavaScript: '-j' or '--javascript'
+  - TypeScript: '-t' or '--typescript'
 
-For example:
+Optionally, add '-y' or '--yes' to skip interactive prompts and use default values.
 
-\`\`\`bash
-node-initdb -m
- \`\`\`
+For example, to set up a project with MongoDB, Express, and TypeScript:
 
-### **Adding a Module**
+bash
+node-initdb -m -e -t
 
-Use the  \`node-add\` command to add new modules to this project:
 
-\`\`\`bash
-node-add <moduleName> [-m / --mongo] [-s / --seque]
-\`\`\`
+### Adding a Module
 
-For example:
+To add a new module to your project, use the 'node-add' command with the same required options:
 
-\`\`\`bash
-node-add user -m
-\`\`\`
+bash
+node-add <moduleName> [-m / --mongo] [-s / --seque] [-e / --express] [-f / --fastify] [-j / --javascript] [-t / --typescript]
 
-## About Node-initdb
 
-**node-initdb** is developed to simplify database-driven project setup. For more information, visit:
-- GitHub: [@MohamedAshraf701](https://github.com/MohamedAshraf701)
+For example, to add a "user" module for MongoDB, Express, and TypeScript:
+
+bash
+node-add user -m -e -t
+
+
+## About node-initdb
+
+node-initdb is designed to simplify the setup of database-driven projects by generating a preconfigured folder structure and installing required dependencies based on your chosen database, web framework, and language.
+
+For more information, visit:
+- GitHub: @MohamedAshraf701
 
 ---
 
-If you encounter issues, feel free to reach out at ashrafchauhan567@gmail.com or open an issue on GitHub.
-
+If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.com or open an issue on GitHub.
             ` } // Empty .env file
     ]},
     cmd : 'npm install @types/bcryptjs @types/config @types/cors body-parser typescript cors dotenv express jsonwebtoken multer @types/express @types/gravatar fs http-errors https @types/jsonwebtoken @types/mongoose @types/multer @types/node concurrently @types/http-errors http-errors'

@@ -78,15 +78,23 @@ const path = require("path");
  */
 const uploadMiddleware = async (req, reply) => {
     try {
+        //postman key name should be 'file'
         const data = await req.file();
         if (!data) {
             return reply.status(400).send({ error: "No file uploaded" });
         }
-        
-        const filePath = path.join(__dirname, "./uploads", data.filename);
-       
-        await fs.promises.writeFile(filePath, await data.toBuffer());
+        const uniqueFilename = Date.now() +'_'+data.filename;
 
+        // Define the file upload path
+        const uploadDir = path.join(__dirname, '..', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true }); // Create uploads folder if not exists
+        }
+    
+        const filePath = path.join(uploadDir, uniqueFilename);
+    
+        await fs.promises.writeFile(filePath, await data.toBuffer());
+       
         req.uploadedFile = {
             filename: data.filename,
             mimetype: data.mimetype,
@@ -98,7 +106,7 @@ const uploadMiddleware = async (req, reply) => {
     }
 };
 
-module.exports = uploadMiddleware;
+module.exports = uploadMiddleware;           
                 ` },
                 {
                   folder: 'Models',
@@ -649,68 +657,83 @@ CARTPATH=
 JWT_SECRET=` }, // Empty .env file
 {
     folder: '', name: 'README.md', content:
-        `# **${Projectname}**
+        `
+# *${Projectname}*
 
-This project was generated using [node-initdb](https://www.npmjs.com/package/node-initdb), a CLI tool for initializing database configurations and folder structures in Node.js projects.
+This project was generated using node-initdb, a CLI tool for initializing database configurations, web framework setups, and project structures in Node.js projects. *This setup requires you to choose one option from each category: a database, a web framework, and a language.*
 
 ## Features
 
-- Preconfigured folders and files for seamless project setup.
-- Supports MongoDB (via Mongoose) and Sequelize (MySQL) integrations.
-- Automatically installs required dependencies for your database.
+- Preconfigured folder structure for streamlined project development.
+- *Database Support:* Choose between MongoDB (via Mongoose) or Sequelize (MySQL).
+- *Web Framework:* Set up with Express or Fastify.
+- *Language Choice:* Develop in JavaScript or TypeScript.
+- Integrated file upload functionality.
+- Pre-configured JWT-based authentication.
+- Automatically installs required dependencies based on your selected configuration.
 
 ## Folder Structure
 
 The following structure was generated:
 
----
+
 - config/
 - Controllers/
 - Routes/
 - Models/
-- uploads/
 - Middleware/
+- uploads/
 - Utils/
----
+
 
 ## Getting Started
 
-### **Setup Project**
+### Setup Project
 
-Use the  \`node-initdb\` command to create the project:
+Use the 'node-initdb' command to create the project. *You must select one option from each category:*
 
-\`\`\`bash
-node-initdb [-m / --mongo] [-s / --seque]
-\`\`\`
+- *Database:*
+  - MongoDB: '-m' or '--mongo'
+  - Sequelize: '-s' or '--seque'
+- *Web Framework:*
+  - Express: '-e' or '--express'
+  - Fastify: '-f' or '--fastify'
+- *Language:*
+  - JavaScript: '-j' or '--javascript'
+  - TypeScript: '-t' or '--typescript'
 
-For example:
+Optionally, add '-y' or '--yes' to skip interactive prompts and use default values.
 
-\`\`\`bash
-node-initdb -m
-\`\`\`
+For example, to set up a project with MongoDB, Express, and TypeScript:
 
-### **Adding a Module**
+bash
+node-initdb -m -e -t
 
-Use the  \`node-add\` command to add new modules to this project:
 
-\`\`\`bash
-node-add <moduleName> [-m / --mongo] [-s / --seque]
-\`\`\`
+### Adding a Module
 
-For example:
+To add a new module to your project, use the 'node-add' command with the same required options:
 
-\`\`\`bash
-node-add user -m
-\`\`\`
+bash
+node-add <moduleName> [-m / --mongo] [-s / --seque] [-e / --express] [-f / --fastify] [-j / --javascript] [-t / --typescript]
 
-## About Node-initdb
 
-**node-initdb** is developed to simplify database-driven project setup. For more information, visit:
-- GitHub: [@MohamedAshraf701](https://github.com/MohamedAshraf701)
+For example, to add a "user" module for MongoDB, Express, and TypeScript:
+
+bash
+node-add user -m -e -t
+
+
+## About node-initdb
+
+node-initdb is designed to simplify the setup of database-driven projects by generating a preconfigured folder structure and installing required dependencies based on your chosen database, web framework, and language.
+
+For more information, visit:
+- GitHub: @MohamedAshraf701
 
 ---
 
-If you encounter issues, feel free to reach out at ashrafchauhan567@gmail.com or open an issue on GitHub.
+If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.com or open an issue on GitHub.
 
         ` }
     ]},
