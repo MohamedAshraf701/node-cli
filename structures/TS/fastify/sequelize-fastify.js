@@ -586,20 +586,35 @@ export default JWTHelper;
             folder: 'Utils', name: 'responseHandler.ts', content:
                 `
 /**
- * ResponseHandler class to handle success and error responses.
- * @class
+ * This module provides a utility class for handling HTTP responses in a standardized way.
+ * It includes methods for sending success and error responses with customizable status codes and messages.
+ * 
+ * @module ResponseHandler
  */
 import { Codes, Messages } from './httpCodesAndMessages';
 import { FastifyReply } from 'fastify/fastify';
 
+/**
+ * Represents a utility class for handling HTTP responses.
+ * 
+ * @class ResponseHandler
+ */
 class ResponseHandler {
+ /**
+     * Sends a successful HTTP response.
+     * 
+     * @param {Response} res - The Express response object.
+     * @param {*} data - The data to be sent in the response.
+     * @param {number} [statusCode=Codes.OK] - The HTTP status code for the response.
+     * @param {string} [message=Messages.OK] - The message to be sent in the response.
+     */
   static sendSuccess(
     res: FastifyReply,
     data: any,
     statusCode: number = Codes.OK,
     message: string = Messages.OK
   ): void {
-    if(res.send) return;
+    if(res.sent) return;
 
     res.status(statusCode).send({
       success: true,
@@ -609,13 +624,21 @@ class ResponseHandler {
     });
   }
 
+   /**
+     * Sends an error HTTP response.
+     * 
+     * @param {Response} res - The Express response object.
+     * @param {*} error - The error to be sent in the response.
+     * @param {number} [statusCode=Codes.INTERNAL_SERVER_ERROR] - The HTTP status code for the response.
+     * @param {string} [message=Messages.INTERNAL_SERVER_ERROR] - The message to be sent in the response.
+     */
   static sendError(
     res: FastifyReply,
     error: any,
     statusCode: number = Codes.INTERNAL_SERVER_ERROR,
     message: string = Messages.INTERNAL_SERVER_ERROR
   ): void {
-    if(res.send) return;
+    if(res.sent) return;
 
     res.status(statusCode).send({
       success: false,
