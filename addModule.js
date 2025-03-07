@@ -118,7 +118,7 @@ program
       process.exit(1); // Exit if project name is not provided
     }else {
       let moduleName = capitalizeAndValidateFilename(name);
-      const rootPath = path.join(process.cwd() + "/test1"); // Root path of the project
+      const rootPath = path.join(process.cwd()); // Root path of the project
       let folder;
       let sfile;
       let mfile;

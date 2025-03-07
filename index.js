@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Importing necessary modules
-const { program } = require('commander');
+const program = required('commander');
 const askQuestion = require('./init'); // Function to initialize questions
 // const { default: chalk } = require('chalk');
 // const { default: inquirer } = require('inquirer');
