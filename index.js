@@ -3,8 +3,10 @@
 // Importing necessary modules
 const { program } = require('commander');
 const askQuestion = require('./init'); // Function to initialize questions
-const { default: chalk } = require('chalk');
-const { default: inquirer } = require('inquirer');
+// const { default: chalk } = require('chalk');
+// const { default: inquirer } = require('inquirer');
+import chalk from 'chalk'
+import inquirer from 'inquirer';
 
 async function Language(options) {
   if (!options.javascript && !options.typescript) {
