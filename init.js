@@ -89,7 +89,7 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
       main: answers[3] || rootFilename,
       scripts: {
         start: `node ${answers[3] || rootFilename}`,
-        dev: `nodemon ${answers[3] || rootFilename}`,
+        dev: `${(options.elysia && options.typescript) ? `bun run --watch ${answers[3] || rootFilename}` : `nodemon ${answers[3] || rootFilename}`}`,
         test: answers[4] || defaultValues[4]
       },
       repository: answers[5] ? { type: "git", url: answers[5] } : undefined,
@@ -112,8 +112,17 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
           Mongo = require('./structures/TS/fastify/mongo-fastify'); // MongoDB structure configuration
           Seque = require('./structures/TS/fastify/sequelize-fastify'); // Sequelize structure configuration
         }
-
-     }else {
+     } 
+     else if(options.elysia){
+      if(options.javascript){
+        Mongo = require('./structures/JS/elysia/mongo-elysia'); // MongoDB structure configuration
+        Seque = require('./structures/JS/elysia/sequelize-elysia'); // Sequelize structure configuration
+      }else{
+        Mongo = require('./structures/TS/elysia/mongo-elysia'); // MongoDB structure configuration
+        Seque = require('./structures/TS/elysia/sequelize-elysia'); // Sequelize structure configuration
+      }
+    }
+    else {
         if(options.javascript){
           Mongo = require('./structures/JS/express/mongo-express'); // MongoDB structure configuration
           Seque = require('./structures/JS/express/sequelize-express'); // Sequelize structure configuration

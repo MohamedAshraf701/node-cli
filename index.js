@@ -3,6 +3,57 @@
 // Importing necessary modules
 const { program } = require('commander');
 const askQuestion = require('./init'); // Function to initialize questions
+const { default: chalk } = require('chalk');
+const { default: inquirer } = require('inquirer');
+
+async function Language(options) {
+  if (!options.javascript && !options.typescript) {
+    const answers = await inquirer.prompt({
+      name: "language",
+      type: "list",
+      message: "Choose a language:\n",
+      choices: [
+        { name: chalk.yellow("JavaScript"), value: "javascript" },
+        { name: chalk.blue("TypeScript"), value: "typescript" }
+      ]
+    });
+
+    options[answers.language] = true;
+  }
+}
+
+async function DB(options) {
+  if (!options.mongo && !options.seque) {
+    const answers = await inquirer.prompt({
+      name: "database",
+      type: "list",
+      message: "Choose a database:\n",
+      choices: [
+        { name: chalk.green("MongoDB"), value: "mongo" },
+        { name: chalk.red("Sequelize"), value: "seque" }
+      ]
+    });
+
+    options[answers.database] = true;
+  }
+}
+
+async function FrameWork(options) {
+  if (!options.express && !options.fastify && !options.elysia) {
+    const answers = await inquirer.prompt({
+      name: "framework",
+      type: "list",
+      message: "Choose a framework:\n",
+      choices: [
+        { name: chalk.cyan("Express"), value: "express" },
+        { name: chalk.magenta("Fastify"), value: "fastify" },
+        { name: chalk.white("Elysia"), value: "elysia" }
+      ]
+    });
+
+    options[answers.framework] = true;
+  }
+}
 
 // Setting up the CLI tool with commander
 program
@@ -13,20 +64,18 @@ program
   .option('-y, --yes', 'Create default structure')
   .option('-e, --express', 'SetUp Initializing For express js')
   .option('-f, --fastify', 'SetUp Initializing For fastify js')
+  .option('-el, --elysia', 'SetUp Initializing For elysia js')
   .option('-j, --javascript', 'SetUp Initializing For javascript')
   .option('-t, --typescript', 'SetUp Initializing For typescript')
-  .action((options) => {
-    // Ensure that exactly one of --express or --fastify is chosen
-    if (!options.express && !options.fastify) {
-      console.error('Please choose one of the following options: --express or --fastify');
-      process.exit(1);
-    }
-    if (options.express && options.fastify) {
-      console.error('Please choose only one option: either --express or --fastify, not both.');
-      process.exit(1);
-    }
-    if (!options.javascript && !options.typescript) {
-      console.error('Please choose one of the following options: --javascript or --typescript');
+  .action( async (options) => {
+    
+    // Ask for missing selections
+    await Language(options);
+    await DB(options);
+    await FrameWork(options);
+
+    if (options.express && options.fastify && options.elysia) {
+      console.error('Please choose only one option: either --express or --fastify or --elysia, not all.');
       process.exit(1);
     }
     if (options.javascript && options.typescript) {
@@ -36,16 +85,8 @@ program
 
     // Existing conditions for mongo/seque options and default structure (--yes)
     if (options.yes) {
-      if (!options.mongo && !options.seque) {
-        console.log('Please choose one of the following options with -y --mongo or --seque');
-        process.exit(1);
-      } else {
         console.log('Creating default structure...');
         askQuestion(9, options); // Start asking initial questions with default structure
-      }
-    } else if (!options.seque && !options.mongo) {
-      console.log('Please choose one of the following options: --mongo or --seque');
-      process.exit(1);
     } else {
       askQuestion(0, options); // Start asking initial questions
     }

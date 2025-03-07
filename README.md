@@ -23,6 +23,7 @@ Navigate to your project directory and run node-initdb with the appropriate opti
 - **Web Framework:**  
   - Express: `--express` or `-e`
   - Fastify: `--fastify` or `-f`
+  - Elysia: `--elysia` or `-el`
 
 - **Language:**  
   - JavaScript: `--javascript` or `-j`
@@ -50,6 +51,14 @@ Optionally, you can add `--yes` (or `-y`) to skip interactive prompts and use de
   node-initdb -s -f -j
   ```
 
+- **Sequelize, Elysia, and JavaScript:**
+
+  ```bash
+  node-initdb --seque --elysia --javascript
+  # or shorthand:
+  node-initdb -s -el -j
+  ```
+
 ### Add Module Task
 
 To add a new module using `node-add`, run:
@@ -61,7 +70,7 @@ node-add <moduleName> [options]
 Replace `<moduleName>` with your desired module name. Use the same options for database, framework, and language:
 
 - Database: `-m` / `--mongo`, `-s` / `--seque`
-- Framework: `-e` / `--express`, `-f` / `--fastify`
+- Framework: `-e` / `--express`, `-f` / `--fastify`, `-el` / `--elysia`
 - Language: `-j` / `--javascript`, `-t` / `--typescript`
 
 #### Example
@@ -101,6 +110,7 @@ Depending on your chosen configuration, node-initdb installs the following depen
 - **Web Framework:**
   - **Express:** `express`
   - **Fastify:** `fastify`
+  - **Elysia:** `elysia`
 - **New Features:**
   - **File Upload:** `multer`
   - **JWT Authentication:** `jsonwebtoken`

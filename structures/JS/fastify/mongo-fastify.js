@@ -479,9 +479,9 @@ class ResponseHandler {
     statusCode = Codes.INTERNAL_SERVER_ERROR,
     message = Messages.INTERNAL_SERVER_ERROR
   ) {
+    if(res.sent) return;
+  
     res.code(statusCode).send({
-      if(res.sent) return;
-
       success: false,
       status: statusCode,
       message: message,
@@ -699,6 +699,14 @@ IS_HTTPS=false
 KEYPATH=
 CARTPATH=
 JWT_SECRET=` } ,
+{
+  folder: '', name: '.gitignore', content:
+      `
+node_modules
+package-lock.json
+.env
+` 
+} ,
       {
         folder: '', name: 'README.md', content:
             `

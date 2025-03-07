@@ -248,7 +248,7 @@ export const ${name}Controller = {
       }
 
       const currentPage = parseInt(page as string) || 1;
-      const limit = 10;
+      let limit = parseInt(req.query.limit as string) || 10;
       const skip = (currentPage - 1) * limit;
 
       const [${name}s, totalItems] = await Promise.all([
@@ -539,7 +539,7 @@ export const ${name}Controller = {
         ResponseHandler.sendSuccess(res, result, Codes.OK, Messages.DATA_RETRIEVED_SUCCESS);
       } else {
         const page = parseInt(req.query.page as string) || 1;
-        const limit = 10;
+        let limit = parseInt(req.query.limit as string) || 10;
         const offset = (page - 1) * limit;
 
         const result = await ${name}Model.findAll({ offset, limit });

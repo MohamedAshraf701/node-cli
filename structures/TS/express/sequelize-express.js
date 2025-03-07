@@ -124,29 +124,173 @@ export default upload;
             name: 'example.Model.ts',
             content:
                 `
-import { DataTypes } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../config/dbConfig"; // Ensure correct path
+// ✅ Define TypeScript Interface for Model Attributes
+interface ExampleAttributes {
+  id?: string;
+  stringField: string;
+  numberField: number;
+  dateField?: Date;
+  bufferField?: Buffer | null;
+  booleanField: boolean;
+  mixedField: any;
+  objectIdField?: string;
+  arrayField: string[];
+  decimal128Field: number;
+  mapField: Record<string, string>;
+  nestedObject: {
+    nestedString: string;
+    nestedNumber: number;
+  };
+  listOfLists: number[][];
+  listOfObjects: {
+    subField1: string;
+    subField2: number;
+  }[];
+  emailField: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
-// Defining the example model with its structure and rules
-const example = sequelize.define('example', {
-  username: {
-    type: DataTypes.STRING, // Specifies the data type of username as string
-    allowNull: false, // Makes the username field non-nullable
-  },
-  email: {
-    type: DataTypes.STRING, // Specifies the data type of email as string
-    allowNull: false, // Makes the email field non-nullable
-    unique: true, // Ensures email values are unique across the table
-  },
-  password: {
-    type: DataTypes.STRING, // Specifies the data type of password as string
-    allowNull: false, // Makes the password field non-nullable
-  },
-}, {
-  // options - Additional model configuration options can be specified here
-});
+// ✅ Define TypeScript Interface for Creation (Excluding 'id')
+interface ExampleCreationAttributes extends Optional<ExampleAttributes, "id"> {}
 
-module.exports = example; // Exporting the example model for use in other parts of the application
+// ✅ Define ExampleModel Class Extending Sequelize Model
+class ExampleModel extends Model<ExampleAttributes, ExampleCreationAttributes> implements ExampleAttributes {
+  public id!: string;
+  public stringField!: string;
+  public numberField!: number;
+  public dateField!: Date;
+  public bufferField!: Buffer | null;
+  public booleanField!: boolean;
+  public mixedField!: any;
+  public objectIdField!: string;
+  public arrayField!: string[];
+  public decimal128Field!: number;
+  public mapField!: Record<string, string>;
+  public nestedObject!: {
+    nestedString: string;
+    nestedNumber: number;
+  };
+  public listOfLists!: number[][];
+  public listOfObjects!: {
+    subField1: string;
+    subField2: number;
+  }[];
+  public emailField!: string;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
+
+// ✅ Initialize the ExampleModel
+ExampleModel.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    stringField: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: "String field is required" },
+        len: {
+          args: [5, 50],
+          msg: "String field must be between 5 and 50 characters long",
+        },
+      },
+      defaultValue: "Default String",
+    },
+    numberField: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: { msg: "Number field is required" },
+        min: {
+          args: [0],
+          msg: "Number field must be at least 0",
+        },
+        max: {
+          args: [100],
+          msg: "Number field must be less than or equal to 100",
+        },
+      },
+      defaultValue: 42,
+    },
+    dateField: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    bufferField: {
+      type: DataTypes.BLOB("long"),
+      allowNull: true,
+    },
+    booleanField: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    mixedField: {
+      type: DataTypes.JSON,
+      defaultValue: {},
+    },
+    objectIdField: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+    },
+    arrayField: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: ["defaultItem1", "defaultItem2"],
+    },
+    decimal128Field: {
+      type: DataTypes.DECIMAL(38, 16),
+      defaultValue: 0.0,
+    },
+    mapField: {
+      type: DataTypes.JSON,
+      defaultValue: { key1: "value1", key2: "value2" },
+    },
+    nestedObject: {
+      type: DataTypes.JSON,
+      defaultValue: { nestedString: "Nested Default String", nestedNumber: 10 },
+    },
+    listOfLists: {
+      type: DataTypes.JSON,
+      defaultValue: [
+        [1, 2, 3],
+        [4, 5, 6],
+      ],
+    },
+    listOfObjects: {
+      type: DataTypes.JSON,
+      defaultValue: [
+        { subField1: "Default1", subField2: 100 },
+        { subField1: "Default2", subField2: 200 },
+      ],
+    },
+    emailField: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      set(value: string) {
+        this.setDataValue("emailField", value.trim().toLowerCase());
+      },
+      validate: {
+        notNull: { msg: "Email is required" },
+        isEmail: { msg: "Invalid email address" },
+      },
+    },
+  },
+  {
+    sequelize,
+    tableName: "Examples",
+    timestamps: true, // ✅ Enables createdAt & updatedAt fields
+  }
+);
+
+// ✅ Export the ExampleModel for usage in other files
+export default ExampleModel;
                 
                 
         ` },

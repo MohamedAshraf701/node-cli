@@ -158,7 +158,7 @@ module.exports = {
         return;
       } else {
         let page = req.query.page || 1
-        let limit = 10
+        let limit = req.query.limit || 10
         const skip = (page - 1) * limit
         const result = await ${name}Model.find().skip(skip).limit(limit);
         const totalItem = await ${name}Model.countDocuments()
@@ -393,7 +393,7 @@ module.exports = {
         ResponseHandler.sendSuccess(res, result, Codes.OK, Messages.DATA_RETRIEVED_SUCCESS);
       } else {
         let page = req.query.page || 1;
-        let limit = 10;
+        let limit = req.query.limit || 10
         const offset = (page - 1) * limit;
         const result = await ${name}Model.findAll({ offset, limit });
         const totalItem = await ${name}Model.count();

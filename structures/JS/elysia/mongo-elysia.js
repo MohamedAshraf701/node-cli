@@ -1,182 +1,296 @@
 module.exports = {
-    folders: ['config','Controllers', 'Routes', 'Models', 'uploads', 'Middleware' , 'Utils'],
+    folders: ['config', 'Controllers', 'Routes', 'Models', , 'uploads', 'Middleware' , 'Utils'],
     files:(index,Projectname) =>{return  [
         {
             folder: 'Controllers',
             name: 'health.Controller.js',
             content:
                 `
-  // Importing HTTP status codes and messages from utilities
-  const { Codes, Messages } = require("../Utils/httpCodesAndMessages");
-  // Importing the response handler utility for managing API responses
-  const ResponseHandler = require("../Utils/responseHandler");
-  
-  module.exports = {
-      // Health check endpoint
-      Health: (req, res, next) => {
-          try {
-              // Attempt to send a success response indicating the health status
-              ResponseHandler.sendSuccess(res, "health Status", Codes.OK, Messages.OK);
-              return;
-          } catch (error) {
-              // Handle any errors that occur during the process by sending an error response
-              ResponseHandler.sendError(res, error, Codes.INTERNAL_SERVER_ERROR, Messages.INTERNAL_SERVER_ERROR);
-              return;
-         }
-      }
+/**
+ * @file healthController.ts
+ * @description Controller for handling server health check requests.
+ * @module healthController
+ */
+
+// Import necessary utilities and response handlers
+import { Codes, Messages } from "../Utils/httpCodesAndMessages.js";
+import ResponseHandler from "../Utils/responseHandler.js";
+
+/**
+ * @constant healthController
+ * @description Defines methods for server health check endpoints.
+ */
+export const healthController = {
+  /**
+   * @function getHealth
+   * @description Handles a health check request by returning the server's status.
+   * @param {object} context - The request context object provided by Elysia.
+   * @param {object} context.store - The application's shared store (if available).
+   * @param {object} context.set - The response object for setting HTTP status codes.
+   * @returns {object} JSON response indicating the server's health status.
+   * 
+   * @example
+   * // Sample response:
+   * {
+   *   "status": 200,
+   *   "message": "Server Health Okay",
+   *   "data": { "profile": {...} }
+   * }
+   */
+  getHealth: ({ store, set }) => {
+    // Send an initial success response confirming that the server is healthy
+    ResponseHandler.sendSuccess(set, "Health Okay!", Codes.OK, Messages.OK);
+
+    // Send another success response with profile data (if available) from the store
+    return ResponseHandler.sendSuccess(
+      set,
+      store.profile,  // Retrieve profile data from the application's shared store
+      Codes.OK,       // HTTP status code: 200 OK
+      "Server Health Okay"  // Response message indicating the server's health
+    );
   }
+};
+
                 ` },
         {
             folder: 'Routes',
             name: 'health.Route.js',
             content:
                 `
-// Importing the express module to create router instances and handle the routing
-const express = require("express");
-// Creating a router instance from express to define route handlers
-const router = express.Router();
+/**
+ * @file healthRoutes.ts
+ * @description Defines API routes for health checks.
+ * @module healthRoutes
+ */
 
-// Importing the HealthController from the Controllers directory
-const HealthController = require("../Controllers/health.Controller")
+// Load environment variables from .env file
+import { config } from "dotenv";
+config();
 
-// Defining a GET route on the root path which uses the Health method from HealthController to handle requests
-router.get("/" ,HealthController.Health);
+// Import the HealthController to handle requests
+import { healthController } from "../Controllers/health.Controller.js";
 
-// Exporting the router instance to be used in other parts of the application
-module.exports = router;
-                ` },
+/**
+ * @function healthRoutes
+ * @description Registers health check routes in the application.
+ * @param {object} app - The Elysia app instance where routes are registered.
+ * @returns {object} The updated app instance with registered routes.
+ * 
+ * @example
+ * // Register the health routes in the main server file:
+ * app.use(healthRoutes);
+ */
+export const healthRoutes = (app) => {
+    return app.get("/health", healthController.getHealth);
+};                       
+      ` },
         {
             folder: 'Models',
             name: 'example.Model.js',
             content:
                 `
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+/**
+ * @file ExampleModel.ts
+ * @description Mongoose schema for an example collection with various field types.
+ * @module ExampleModel
+ */
 
-// Define the schema
-const ExampleSchema = new Schema({
-  // String field with required validation, minimum length, maximum length, and default value
-  stringField: {
-    type: String,
-    required: [true, 'String field is required'], // Field is required
-    minlength: [5, 'String field must be at least 5 characters long'], // Minimum length constraint
-    maxlength: [50, 'String field must be less than 50 characters long'], // Maximum length constraint
-    default: 'Default String' // Default value if not provided
-  },
-  // Number field with required validation, minimum value, maximum value, and default value
-  numberField: {
-    type: Number,
-    required: [true, 'Number field is required'], // Field is required
-    min: [0, 'Number field must be at least 0'], // Minimum value constraint
-    max: [100, 'Number field must be less than or equal to 100'], // Maximum value constraint
-    default: 42 // Default value if not provided
-  },
-  // Date field with default value set to current date and time
-  dateField: {
-    type: Date,
-    default: Date.now // Default value set to current date and time
-  },
-  // Buffer field for storing binary data (no specific validation or default value provided here)
-  bufferField: Buffer,
-  // Boolean field with default value
-  booleanField: {
-    type: Boolean,
-    default: false // Default value if not provided
-  },
-  // Mixed field that can hold any type of value, with an empty object as default
-  mixedField: {
-    type: Schema.Types.Mixed,
-    default: {} // Default value is an empty object
-  },
-  // ObjectId field for referencing another document (self-referencing for example)
-  objectIdField: {
-    type: Schema.Types.ObjectId,
-    ref: 'ExampleModel' // Reference to self (example purposes only)
-  },
-  // Array field containing strings, with default values
-  arrayField: {
-    type: [String],
-    default: ['defaultItem1', 'defaultItem2'] // Default array with two items
-  },
-  // Decimal128 field for high-precision decimal values
-  decimal128Field: {
-    type: Schema.Types.Decimal128,
-    default: 0.0 // Default value is 0.0
-  },
-  // Map field for storing key-value pairs of strings
-  mapField: {
-    type: Map,
-    of: String,
-    default: new Map([['key1', 'value1'], ['key2', 'value2']]) // Default map with key-value pairs
-  },
-  // Nested object with fields containing default values
-  nestedObject: {
-    nestedString: {
+import mongoose, { Schema } from 'mongoose';
+
+// Define the schema with various field types
+const ExampleSchema = new Schema(
+  {
+    /**
+     * @property {string} stringField - A required string with min/max validation.
+     * @default "Default String"
+     */
+    stringField: {
       type: String,
-      default: 'Nested Default String' // Default value for nestedString
+      required: [true, 'String field is required'],
+      minlength: [5, 'String field must be at least 5 characters long'],
+      maxlength: [50, 'String field must be less than 50 characters long'],
+      default: 'Default String',
     },
-    nestedNumber: {
-      type: Number,
-      default: 10 // Default value for nestedNumber
-    }
-  },
-  // List of lists containing nested arrays of numbers with default values
-  listOfLists: {
-    type: [[Number]],
-    default: [[1, 2, 3], [4, 5, 6]] // Default list of lists with nested numbers
-  },
-  // List of objects with subfields and default values
-  listOfObjects: {
-    type: [{
-      subField1: {
-        type: String,
-        default: 'SubField Default' // Default value for subField1
-      },
-      subField2: {
-        type: Number,
-        default: 100 // Default value for subField2
-      }
-    }],
-    default: [{ subField1: 'Default1', subField2: 100 }, { subField1: 'Default2', subField2: 200 }] // Default array of objects
-  },
-  // Email field with validation for format, uniqueness, and trimming
-  emailField: {
-    type: String,
-    required: [true, 'Email is required'], // Field is required
-    unique: true, // Ensure uniqueness
-    lowercase: true, // Convert to lowercase
-    trim: true, // Trim whitespace
-    match: [/\S+@\S+\.\S+/, 'Invalid email address'] // Validate format using regex
-  }
-}, {
-  timestamps: true, // Add createdAt and updatedAt timestamps
-  versionKey: false // Disable versioning
-});
 
-// Add index on emailField for uniqueness
+    /**
+     * @property {number} numberField - A required number field with min/max constraints.
+     * @default 42
+     */
+    numberField: {
+      type: Number,
+      required: [true, 'Number field is required'],
+      min: [0, 'Number field must be at least 0'],
+      max: [100, 'Number field must be at most 100'],
+      default: 42,
+    },
+
+    /**
+     * @property {Date} dateField - Automatically set to the current timestamp.
+     */
+    dateField: {
+      type: Date,
+      default: Date.now,
+    },
+
+    /**
+     * @property {Buffer} bufferField - Stores binary data.
+     */
+    bufferField: Buffer,
+
+    /**
+     * @property {boolean} booleanField - A boolean field with a default value.
+     * @default false
+     */
+    booleanField: {
+      type: Boolean,
+      default: false,
+    },
+
+    /**
+     * @property {any} mixedField - A field that can store any data type.
+     * @default {}
+     */
+    mixedField: {
+      type: Schema.Types.Mixed,
+      default: {},
+    },
+
+    /**
+     * @property {ObjectId} objectIdField - A reference to another model.
+     */
+    objectIdField: {
+      type: Schema.Types.ObjectId,
+      ref: 'ExampleModel',
+    },
+
+    /**
+     * @property {string[]} arrayField - An array of strings with a default value.
+     * @default ["defaultItem1", "defaultItem2"]
+     */
+    arrayField: {
+      type: [String],
+      default: ['defaultItem1', 'defaultItem2'],
+    },
+
+    /**
+     * @property {Decimal128} decimal128Field - Stores precise decimal values.
+     * @default 0.0
+     */
+    decimal128Field: {
+      type: Schema.Types.Decimal128,
+      default: 0.0,
+    },
+
+    /**
+     * @property {Map<string, string>} mapField - A key-value map.
+     * @default {"key1": "value1", "key2": "value2"}
+     */
+    mapField: {
+      type: Map,
+      of: String,
+      default: new Map([
+        ['key1', 'value1'],
+        ['key2', 'value2'],
+      ]),
+    },
+
+    /**
+     * @property {object} nestedObject - A nested object with subfields.
+     */
+    nestedObject: {
+      nestedString: {
+        type: String,
+        default: 'Nested Default String',
+      },
+      nestedNumber: {
+        type: Number,
+        default: 10,
+      },
+    },
+
+    /**
+     * @property {number[][]} listOfLists - A 2D array of numbers.
+     * @default [[1,2,3], [4,5,6]]
+     */
+    listOfLists: {
+      type: [[Number]],
+      default: [
+        [1, 2, 3],
+        [4, 5, 6],
+      ],
+    },
+
+    /**
+     * @property {Array<{subField1: string, subField2: number}>} listOfObjects
+     * @default [{subField1: "Default1", subField2: 100}, {subField1: "Default2", subField2: 200}]
+     */
+    listOfObjects: {
+      type: [
+        {
+          subField1: {
+            type: String,
+            default: 'SubField Default',
+          },
+          subField2: {
+            type: Number,
+            default: 100,
+          },
+        },
+      ],
+      default: [
+        { subField1: 'Default1', subField2: 100 },
+        { subField1: 'Default2', subField2: 200 },
+      ],
+    },
+
+    /**
+     * @property {string} emailField - A required email field with uniqueness, trimming, and lowercase conversion.
+     */
+    emailField: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true, // ✅ Adds 'createdAt' & 'updatedAt' fields
+    versionKey: false, // ✅ Removes '__v' versioning field
+  }
+);
+
+/**
+ * @description Adds a unique index on 'emailField' to enforce uniqueness at the database level.
+ */
 ExampleSchema.index({ emailField: 1 }, { unique: true });
 
-// Middleware example (pre-save hook for validation)
-ExampleSchema.pre('save', function(next) {
-  // Add custom logic before saving
-  console.log('Saving document...');
+/**
+ * @description Middleware that runs before saving a document.
+ * Used for operations like hashing passwords or logging actions.
+ */
+ExampleSchema.pre('save', function (next) {
+  console.log('📝 Saving document:', this);
   next();
 });
 
-// Create the model based on the schema
+/**
+ * @constant ExampleModel
+ * @description Mongoose model based on 'ExampleSchema'.
+ */
 const ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
 
-// Export the model for use in other parts of the application
-module.exports = ExampleModel;
+export default ExampleModel;
                 
         ` },
         { folder: 'uploads', name: 'dummy', content: '// Dummy file' },
         {
             folder: 'Utils', name: 'httpCodesAndMessages.js', content:
                 `
+
 // HTTP Status Codes
 // This object maps standard HTTP status codes to their numeric values.
-const Codes = {
+export const Codes = {
   CONTINUE: 100,
   SWITCHING_PROTOCOLS: 101,
   PROCESSING: 102,
@@ -227,7 +341,7 @@ const Codes = {
 };
 // HTTP Status Messages
 // This object maps standard HTTP status codes to their default message strings.
-const Messages = {
+export const Messages = {
   CONTINUE: "Continue",
   SWITCHING_PROTOCOLS: "Switching Protocols",
   PROCESSING: "Processing",
@@ -280,16 +394,16 @@ const Messages = {
   DATA_UPDATED_SUCCESS: "Data updated successfully",
   DATA_DELETED_SUCCESS: "Data deleted successfully"
 };
-
-module.exports = { Codes, Messages };                             
+                   
+export default { Codes, Messages };
                 `
         },
         {
             folder : 'Utils', name : 'validations.js', content :
             `
 // Validation.js
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 international phone number format
+const emailRegex = /^[^s@]+@[^s@]+.[^s@]+$/;
+const phoneRegex = /^+?[1-9]d{1,14}$/; // E.164 international phone number format
 
 /**
  * Validate if a value is a valid email.
@@ -354,91 +468,100 @@ module.exports = {
     isNotNullOrUndefined,
     hasRequiredFields
 };
-            
+                                    
             `
         },
         {
             folder : 'Middleware', name : 'jwtToken.js', content :
-            `'use strict'
+            `
+'use strict'
 // jwtHelper.js
-const jwt = require('jsonwebtoken');
-const ResponseHandler = require('../Utils/responseHandler');
-const { Codes, Messages } = require('../Utils/httpCodesAndMessages');
 
-// Secret key for signing tokens
-const SECRET_KEY = process.env.JWT_SECRET || 'X~7W@**TsZ=@}XT/"Z<bo7oDY8gtD(';
-
-class JWTHelper {
-    /**
-     * Create a new JWT token
-     * @param {Object} payload - The payload to include in the token
-     * @param {Object} options - Options for token creation, such as 'expiresIn'
-     * @returns {String} - The created JWT token
-     */
-    static createToken(payload, options = {}) {
-        const tokenOptions = {};
-        if (options.expiresIn) {
-            tokenOptions.expiresIn = options.expiresIn;
-        }
-        return jwt.sign(payload, SECRET_KEY, tokenOptions);
-    }
-
-    /**
-     * Validate a JWT token
-     * @param {String} token - The token to validate
-     * @returns {Object} - The decoded token if valid, or an error if invalid
-     */
-    static validateToken(token) {
-        try {
-            const decoded = jwt.verify(token, SECRET_KEY);
-            return { valid: true, decoded };
-        } catch (error) {
-            if (error.name === 'TokenExpiredError') {
-                return { valid: false, error: 'Token has expired' };
-            }
-            return { valid: false, error: error.message };
-        }
-    }
-
-    /**
-     * Middleware to validate JWT token in requests
-     * @param {Object} req - The request object
-     * @param {Object} res - The response object
-     * @param {Function} next - The next middleware function
-     */
-    static tokenMiddleware(req, res, next) {
-        const token = req.headers['authorization']?.split(' ')[1];
-        if (!token) {
-            return ResponseHandler.sendError(res, 'No token provided', Codes.UNAUTHORIZED, Messages.UNAUTHORIZED);
-        }
-
-        const { valid, decoded, error } = JWTHelper.validateToken(token);
-        if (valid) {
-            req.user = decoded; // Attach the decoded payload to the request object
-            next();
-        } else {
-            if (error === 'Token has expired') {
-                return ResponseHandler.sendError(res, 'Token has expired', Codes.UNAUTHORIZED, Messages.UNAUTHORIZED);
-            }
-            return ResponseHandler.sendError(res, 'Invalid token', Codes.UNAUTHORIZED, Messages.UNAUTHORIZED);
-        }
-    }
-}
-
-module.exports = JWTHelper;
+import ResponseHandler from '../Utils/responseHandler.js';
+import { Codes, Messages } from '../Utils/httpCodesAndMessages.js';
             
+export const authMiddleware = async ({ jwt, headers, set, store }) => {
+    // Extract the Authorization header
+    const authHeader = headers.authorization;
+  
+    /**
+     * Check if the Authorization header is missing or improperly formatted.
+     * The expected format is: "Bearer <token>"
+     */
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
+      return ResponseHandler.sendError(
+        set,
+        "No token provided",
+        Codes.UNAUTHORIZED,
+        "Unauthorized: No token provided"
+      );
+    }
+  
+    // Extract the actual token (removes "Bearer " prefix)
+    const token = authHeader.split(" ")[1];
+  
+    try {
+      // Verify the token and extract the user profile
+      const profile = await jwt.verify(token);
+      
+      /**
+       * If the token is invalid or verification fails, return an unauthorized error.
+       */
+      if (!profile) {
+        return ResponseHandler.sendError(
+          set,
+          "Invalid token",
+          Codes.UNAUTHORIZED,
+          "Unauthorized: Invalid token"
+        );
+      }
+   
+      // Store the authenticated user's profile for use in subsequent handlers/controllers
+      store.profile = profile;
+  
+    } catch (error) {
+      // Default status code and message for authentication failure
+      let statusCode = Codes.UNAUTHORIZED;
+      let message = "Authentication failed";
+  
+      /**
+       * Handle specific JWT errors:
+       * - 'TokenExpiredError': Token is no longer valid.
+       * - 'JsonWebTokenError': Token is malformed or incorrect.
+       */
+      if (error.name === "TokenExpiredError") {
+        message = "Token has expired";
+      } else if (error.name === "JsonWebTokenError") {
+        message = "Invalid token format";
+      }
+  
+          // Return the appropriate error response
+      return ResponseHandler.sendError(set, error, statusCode, message);
+    }
+  };
+  
+  export const createToken = async ({ body, jwt }) => {
+    // Generate JWT Token
+    const token = await jwt.sign( body );
+  
+    return {
+      message: "Login successful",
+      token,
+    };
+  }               
             `
         },
         {
             folder: 'Utils', name: 'responseHandler.js', content:
                 `
+
 /**
  * This module provides a utility class for handling HTTP responses in a standardized way.
  * It includes methods for sending success and error responses with customizable status codes and messages.
  * 
  * @module ResponseHandler
  */
-const { Codes, Messages } = require('./httpCodesAndMessages');
+import { Codes, Messages } from './httpCodesAndMessages.js';
 
 /**
  * Represents a utility class for handling HTTP responses.
@@ -454,15 +577,17 @@ class ResponseHandler {
      * @param {number} [statusCode=Codes.OK] - The HTTP status code for the response.
      * @param {string} [message=Messages.OK] - The message to be sent in the response.
      */
-    static sendSuccess(res, data, statusCode = Codes.OK , message = Messages.OK) {
-        if(res.headersSent) return;     
+    static sendSuccess(set, data, statusCode = Codes.OK , message = Messages.OK) {
+        // if(set.headersSent) return;     
 
-        res.status(statusCode).json({
-            success: true,
-            status: statusCode,
-            message: message,
-            data: data,
-        });
+        set.status =statusCode;
+
+        return {
+          success: true,
+          status: statusCode,
+          message,
+          data,
+        };
     }
 
   /**
@@ -473,103 +598,121 @@ class ResponseHandler {
     * @param {number} [statusCode=Codes.INTERNAL_SERVER_ERROR] - The HTTP status code for the response.
     * @param {string} [message=Messages.INTERNAL_SERVER_ERROR] - The message to be sent in the response.
   */
-    static sendError(res, error, statusCode = Codes.INTERNAL_SERVER_ERROR , message = Messages.INTERNAL_SERVER_ERROR) {
-        if(res.headersSent) return;
+    static sendError(set, error, statusCode = Codes.INTERNAL_SERVER_ERROR , message = Messages.INTERNAL_SERVER_ERROR) {
+        // if(set.headersSent) return;
 
-        res.status(statusCode).json({
-            success: false,
-            status: statusCode,
-            message: message,
-            error: error.message || error,
-        });
+        set.status = statusCode;
+        return {
+          success: false,
+          status: statusCode,
+          message,
+          error: error.message || error,
+        };
     }
 }
 
-module.exports = ResponseHandler;
+export default ResponseHandler;
+                
 ` },
         {
             folder: '', name: index, content:
                 `
-const express = require("express"); // Importing express module for server operations
-const createError = require("http-errors"); // Importing module to create HTTP errors
-const dotenv = require("dotenv").config(); // Loading environment variables from .env file
-const cors = require('cors'); // Importing CORS middleware to enable cross-origin requests
-const bodyParser = require("body-parser"); // Importing body-parser middleware to parse request bodies
-const app = express(); // Creating an instance of express
 
-const fs = require('fs'); // Importing file system module for file operations
-app.use(cors()); // Using CORS middleware in the app
-app.use(express.json()); // Middleware to parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded bodies
-app.use(bodyParser.json()); // Middleware to parse JSON bodies using body-parser
+import { Elysia } from "elysia"; 
+import { node } from '@elysiajs/node'
+import { config } from "dotenv";
+import cors from '@elysiajs/cors'; // Importing CORS middleware to enable cross-origin requests
+import { rateLimit } from'elysia-rate-limit'; // Importing rate-limit middleware to limit request rates
+import { helmet } from "elysia-helmet";
+import {jwt} from "@elysiajs/jwt"; // Importing JWT middleware for token verification);
+import ResponseHandler from "./Utils/responseHandler.js";
+import { Codes, Messages } from "./Utils/httpCodesAndMessages.js";
+import fs from 'fs'; // Importing file system module for file operations
+import { healthRoutes } from "./Routes/health.Route.js";
+import  dbConfig  from "./config/dbConfig.js";
 
-const apiV1Router = express.Router(); // Creating a new router for API version 1
+dbConfig();
+config();
 
-// Initialize DB
-require("./config/dbConfig")(); // Importing and executing the database configuration
+const PORT = process.env.PORT || 8068;
+const IS_HTTPS = process.env.IS_HTTPS === "true";
+const CARTPATH = process.env.CARTPATH;
+const KEYPATH = process.env.KEYPATH;
+ 
+const app = new Elysia({ adapter: node() })
 
-// Middleware to log request details after response is sent
-app.use((req, res, next) => {
-  res.on("finish", () => {
-      console.log(req.method + " - " + req.originalUrl + " - " + res.statusCode);
-  });
-  next();
-});
+// Apply rate limiting to prevent excessive requests
+// .use(rateLimit())
+  
+// Secure the application by adding various HTTP headers
+.use(helmet())
 
-apiV1Router.use('/uploads', express.static('uploads')); // Serving static files from 'uploads' directory
-
-// Importing route for health checks
-const RoutesHealth = require("./Routes/health.Route");
-
-// Registering health check route with API v1 router
-apiV1Router.use("/health", RoutesHealth);
-
-// Middleware to handle 404 Not Found error for API v1 routes
-apiV1Router.use((req, res, next) => {
-    next(createError(404, "Not found"));
-});
-
-// Custom error handler middleware for API v1 routes
-apiV1Router.use((err, req, res, next) => {
-    res.status(err.status || 500); // Setting the response status code
-    res.send({
-        error: {
-            status: err.status || 500, // Error status code
-            message: err.message, // Error message
-        },
-    });
-});
-
-app.use("/api/v1" , apiV1Router); // Mounting API v1 router at '/api/v1'
-
-const http = require("https"); // Importing HTTPS module
-const PORT = process.env.PORT || 8096; // Setting port from environment variable or default to 8096
-// Check if HTTPS is enabled via environment variable
-if (process.env.IS_HTTPS == "true") {
-    const privateKey = fs.readFileSync(process.env.KEYPATH, 'utf8'); // Reading private key for HTTPS
-    const certificate = fs.readFileSync(process.env.CARTPATH, 'utf8'); // Reading certificate for HTTPS
-    const credentials = { key: privateKey, cert: certificate }; // Creating credentials object
+ // Enable CORS for cross-origin requests
+ .use(
+    cors({
+      origin: ["*"], // Update with allowed origins for better security
+      })
+      )
+  .use(
+      jwt({
+        name: "jwt",
+        secret: process.env.JWT_SECRET || "your-super-secret-key",
+    })
+  )
+  
+  .onError(({ code, error, set }) => {  // Added 'error' to the parameters
+    console.error("Error caught:", code, error); // Log the error
     
-    // Creating and starting HTTPS server
-    let server = http.createServer(credentials, app);
-    server.listen(PORT, () => {
-        console.log('HTTPS Server started on port :' ,PORT);
-    });
-} else {
-    // Starting HTTP server if HTTPS is not enabled
-    app.listen(PORT, () => {
-        console.log('HTTP Server started on port :' ,PORT);
-    });
-}
+    switch (code) {
+      case 'NOT_FOUND':
+        return ResponseHandler.sendError(set, 404 , Codes.NOT_FOUND, Messages.NOT_FOUND);
+        default:  // Handle all other errors (general error handler)
+        return ResponseHandler.sendError(set, Codes.INTERNAL_SERVER_ERROR, 500, Messages.INTERNAL_SERVER_ERROR); 
+        }
+        })
+  
+    //endpoint for healthRoutes
+    .group("/api/v1", (app) => healthRoutes(app))
+
+  const startServer = async () => {
+      try {
+        const options = {
+          port: PORT,
+        }; // Create a base options object and cast to 'any'
+    
+        if (IS_HTTPS) {
+          if (!CARTPATH || !KEYPATH) {
+            console.error("CARTPATH and KEYPATH environment variables must be set for HTTPS.");
+            process.exit(1); // Exit if HTTPS is enabled but paths are missing
+          }
+    
+          options.cert = readFileSync(CARTPATH);
+          options.key = readFileSync(KEYPATH);
+        }
+    
+        // Start the server using the configured options
+        app.listen(options);
+    
+        console.log(IS_HTTPS ? 'HTTPS' : 'HTTP'+ 'Server started on port:', PORT);
+    
+      } catch (err) {
+        console.error("Server startup error:", err); // Corrected log method and message
+        process.exit(1);
+      }
+  };
+      
+  // Call the startServer function
+  startServer();
+                                                                                                                   
                 ` },
         {
             folder: 'config', name: 'dbConfig.js',
             content:
                 `
-const mongoose = require('mongoose');
-
+import mongoose from 'mongoose'
 // This module exports a function that sets up the MongoDB connection using Mongoose.
-module.exports = () => {
+
+export default () => {
   // Connect to MongoDB using the connection string and credentials from environment variables.
   mongoose
     .connect(process.env.MONGODB_URI, {
@@ -609,7 +752,7 @@ module.exports = () => {
       process.exit(0); // Exit the process after the connection is closed.
     });
   });
-};
+};                             
                 ` },
         {
             folder: 'Middleware', name: 'fileUpload.js',
@@ -623,41 +766,43 @@ module.exports = () => {
  * - File size limit enforcement.
  */
 
-const multer = require("multer"); // Importing multer for handling file uploads
+import fs from "fs";
+import path from "path";
 
-// Configure storage settings for multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/"); // Set upload destination folder
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + file.originalname); // Rename file with timestamp to avoid conflicts
-    }
-});
+const uploadDir = "./uploads";
 
-// Define a filter to allow only image files
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-        cb(null, true); // Accept the file
-    } else {
-        cb(new Error("Only images are allowed!"), false); // Reject non-image files
-    }
-};
+// Ensure the upload directory exists
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
 
-// Configure multer with storage, file filtering, and size limits
-const upload = multer({
-    storage, // Use defined storage settings
-    fileFilter, // Apply file type filter
-    limits: { fileSize: 2 * 1024 * 1024 } // Limit file size to 2MB
-});
+  const upload =  async (context) => {
 
-module.exports = upload; // Export configured multer instance
+    // type UploadBody = { file : File | Blob };
+    const { body, set } = context;
+   if (!body || !body.file) {
+     set.status = 400;
+     return { error: "No file uploaded" };
+   }
+ 
+   const file = body.file; // Ensure the file is treated as a Blob
+   const arrayBuffer = await file.arrayBuffer(); // Convert Blob to Buffer
+   const buffer = Buffer.from(arrayBuffer);
+ 
+   // Generate a unique filename
+   const fileName = Date.now()+'-'+file.name;
+   const filePath = path.join(uploadDir, fileName);
+ 
+   // Save file
+   fs.writeFileSync(filePath, buffer);
+ }
 
-
+export default upload; // Export configured multer instance
+                                                            
                 ` },
                 {
                   folder: '', name: '.env', content:
-                      `PORT=3000
+`PORT=3000
 MONGODB_URI=mongodb://localhost:27017/
 DB_NAME=test
 DB_USER=
@@ -665,18 +810,20 @@ DB_PASS=
 IS_HTTPS=false
 KEYPATH=
 CARTPATH=
-JWT_SECRET=` } ,
-{
-  folder: '', name: '.gitignore', content:
-      `
+JWT_SECRET=
+` } ,
+
+                {
+                  folder: '', name: '.gitignore', content:
+                      `
 node_modules
 package-lock.json
 .env
-` 
-} ,
+      ` 
+    } ,
       {
         folder: '', name: 'README.md', content:
-`
+            `
 # *${Projectname}*
 
 This project was generated using node-initdb, a CLI tool for initializing database configurations, web framework setups, and project structures in Node.js projects. *This setup requires you to choose one option from each category: a database, a web framework, and a language.*
@@ -753,8 +900,7 @@ For more information, visit:
 ---
 
 If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.com or open an issue on GitHub.
-
             ` } // Empty .env file
     ]},
-    cmd : 'npm install body-parser cors dotenv express fs http-errors https jsonwebtoken mongoose multer'
+    cmd : 'npm install @elysiajs/cors @elysiajs/jwt @elysiajs/node dotenv elysia elysia-helmet elysia-rate-limit fs https mongoose jsonwebtoken'
 }

@@ -185,7 +185,7 @@ export default {
     }
   },
 
-  get${name}: async (req: FastifyRequest<{ Querystring: { id?: string; page?: string } }>, res: FastifyReply): Promise<void> => {
+  get${name}: async (req: FastifyRequest<{ Querystring: { id?: string; page?: string; limit?: string; } }>, res: FastifyReply): Promise<void> => {
     try {
       const { id, page } = req.query;
 
@@ -198,7 +198,7 @@ export default {
       }
 
       const currentPage = parseInt(page as string) || 1;
-      const limit = 10;
+      let limit = parseInt(req.query.limit as string) || 10;
       const skip = (currentPage - 1) * limit;
 
       const [${name}s, totalItems] = await Promise.all([
@@ -481,7 +481,7 @@ export const ${name}Controller = {
     }
   },
 
-  get${name}: async (req: FastifyRequest<{ Querystring: { id?: string; page?: string } }>, res: FastifyReply): Promise<void> => {
+  get${name}: async (req: FastifyRequest<{ Querystring: { id?: string; page?: string; limit?: string; } }>, res: FastifyReply): Promise<void> => {
     try {
       const { id, page } = req.query;
 
@@ -494,7 +494,7 @@ export const ${name}Controller = {
       }
 
       const pages = parseInt(page as string) || 1;
-      const limit = 10;
+      let limit = parseInt(req.query.limit as string) || 10;
       const offset = (pages - 1) * limit;
 
       const result = await ${name}Model.findAll({ offset, limit });
