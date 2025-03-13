@@ -32,12 +32,12 @@ function printBanner() {
     console.log(
       chalk.magentaBright("Usage: ") +
       chalk.yellow("node-initdb ") +
-      chalk.white("-m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript>")
+      chalk.white("-m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript> -n <-n or --npm | -ya or --yarn | -b or --bun | -pn or --pnpm>") 
     );
     console.log();
     console.log(chalk.blue("Examples:"));
-    console.log(chalk.cyan("  node-initdb -m -e -t") + chalk.gray(" # MongoDB + Express + TypeScript"));
-    console.log(chalk.cyan("  node-initdb -s -f -j") + chalk.gray(" # Sequelize + Fastify + JavaScript"));
+    console.log(chalk.cyan("  node-initdb -m -e -t -n") + chalk.gray(" # MongoDB + Express + TypeScript + npm"));
+    console.log(chalk.cyan("  node-initdb -s -f -j -b") + chalk.gray(" # Sequelize + Fastify + JavaScript + bun"));
     console.log();
     console.log();
     console.log();

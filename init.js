@@ -156,7 +156,7 @@ const askQuestion = (index, options, rl) => { // Recursive function to ask each 
 
     // Execute command to install required packages
     console.log('Installing required packages...');
-    exec(`${options.npm ? "npm install "+cmd: "bun add "+cmd}`, (error, stdout, stderr) => {
+    exec(`${options.npm ? "npm install "+ cmd: options.yarn ? "yarn add " + cmd : options.pnpm ? "pnpm add " + cmd : "bun add "+ cmd}`, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error installing packages: ${error.message}`);
             return;

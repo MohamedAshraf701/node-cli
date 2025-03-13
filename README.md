@@ -1,34 +1,34 @@
 <p>
- <a href="https://github.com/MohamedAshraf701/node-cli/blob/main">
-    <img src="https://github.com/MohamedAshraf701/node-cli/blob/main/Logo.png" height="70" width="70" alt="ashraf704" />
+  <a href="https://github.com/MohamedAshraf701/node-cli/blob/main">
+    <img src="https://github.com/user-attachments/assets/fb911b79-9749-4edb-8aea-594262ef4365" height="70" width="70" alt="ashraf704" style="float:left; margin-right: 15px;" />
   </a>
+  <strong style="font-size: 24px;">node-initdb</strong><br />
+  <span>CLI tool for initializing project configurations and structures in Node.js projects.</span>
 </p>
 
-# node-initdb
+---
 
-node-initdb is a CLI tool for initializing project configurations and structures in Node.js projects. **It now requires you to select a database, a web framework, and a language (JavaScript or TypeScript) for the tool to work.** In addition to setting up your chosen database and framework, node-initdb now supports file upload functionality and JWT-based authentication.
+node-initdb is a CLI tool for initializing project configurations and structures in Node.js projects. **It now requires you to select a database, a web framework, a language (JavaScript or TypeScript), and a package manager for the tool to work.** In addition to setting up your chosen database and framework, node-initdb now supports file upload functionality and JWT-based authentication.
 
-![Node InitDB Plugin Demo](https://github.com/MohamedAshraf701/node-cli/blob/main/example.gif)
+![Node InitDB Plugin Demo](https://github.com/user-attachments/assets/997d5cfc-5187-49e9-8c5b-713d5ea9d9cb)
 
 ## Installation
 
 Install node-initdb globally using npm:
 
-```bash
+bash
 npm install -g node-initdb
-```
+
 
 ## Usage
 
 Navigate to your project directory and run node-initdb with the appropriate options. **You must choose one option each for:**
 
 - **Database:**
-
   - MongoDB: `--mongo` or `-m`
   - Sequelize: `--seque` or `-s`
 
 - **Web Framework:**
-
   - Express: `--express` or `-e`
   - Fastify: `--fastify` or `-f`
   - Elysia: `--elysia` or `-el`
@@ -37,11 +37,13 @@ Navigate to your project directory and run node-initdb with the appropriate opti
   - JavaScript: `--javascript` or `-j`
   - TypeScript: `--typescript` or `-t`
 
-- **PackageManager:**
-  - Npm: `--npm`
-  - Bun: `--bun`
+- **Package Manager:**
+  - Npm: `--npm` or `-n`
+  - Bun: `--bun` or `-b`
+  - Yarn: `--yarn` or `-yr`
+  - Pnpm: `--pnpm` or `-pn`
 
-**Important:** All three categories (database, framework, and language) are required. If any one is missing, node-initdb will not run.
+**Important:** All four categories (database, framework, language, and package manager) are required. If any one is missing, node-initdb will not run.
 
 Optionally, you can add `--yes` (or `-y`) to skip interactive prompts and use default values.
 
@@ -49,53 +51,54 @@ Optionally, you can add `--yes` (or `-y`) to skip interactive prompts and use de
 
 - **MongoDB, Express, and TypeScript with npm:**
 
-  ```bash
+  bash
   node-initdb --mongo --express --typescript --npm
   # or shorthand:
-  node-initdb -m -e -t --npm
-  ```
+  node-initdb -m -e -t -n
+  
 
 - **Sequelize, Fastify, and JavaScript with bun:**
 
-  ```bash
+  bash
   node-initdb --seque --fastify --javascript --bun
   # or shorthand:
-  node-initdb -s -f -j --bun
-  ```
+  node-initdb -s -f -j -b
+  
 
-- **Sequelize, Elysia, and JavaScript with npm:**
+- **Sequelize, Elysia, and JavaScript with yarn:**
 
-  ```bash
-  node-initdb --seque --elysia --javascript --npm
+  bash
+  node-initdb --seque --elysia --javascript --yarn
   # or shorthand:
-  node-initdb -s -el -j --npm
-  ```
+  node-initdb -s -el -j -yr
+  
 
 ### Add Module Task
 
 To add a new module using `node-add`, run:
 
-```bash
+bash
 node-add <moduleName> [options]
-```
 
-Replace `<moduleName>` with your desired module name. Use the same options for database, framework, and language:
+
+Replace `<moduleName>` with your desired module name. Use the same options for database, framework, language, and package manager:
 
 - Database: `-m` / `--mongo`, `-s` / `--seque`
 - Framework: `-e` / `--express`, `-f` / `--fastify`, `-el` / `--elysia`
 - Language: `-j` / `--javascript`, `-t` / `--typescript`
+- Package Manager: `-n` / `--npm`, `-b` / `--bun`, `-yr` / `--yarn`, `-pn` / `--pnpm`
 
 #### Example
 
-```bash
-node-add "user" -m -e -t
-```
+bash
+node-add "user" -m -e -t -n
+
 
 ## Folder Structure
 
 After running node-initdb, your project will have the following structure:
 
-```
+
 - config/
 - Controllers/
 - Routes/
@@ -103,7 +106,7 @@ After running node-initdb, your project will have the following structure:
 - Middleware/
 - uploads/
 - Utils/
-```
+
 
 ## Files Created
 
@@ -140,6 +143,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For questions or support, feel free to reach out:
 
 - **Email:** ashrafchauhan567@gmail.com
+- **Email:** meetkathiriya78028@gmail.com
 - **GitHub:** [@MohamedAshraf701](https://github.com/MohamedAshraf701)
 
 ## Support
@@ -151,3 +155,4 @@ If you find node-initdb useful, please consider supporting the project:
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="ashraf704" />
   </a>
 </p>
+

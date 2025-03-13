@@ -26,12 +26,12 @@ function printBanner() {
     console.log(
       chalk.magentaBright("Usage: ") +
       chalk.yellow("node-initdb ") +
-      chalk.white("-m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript>")
+      chalk.white("-m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript> -n <-n or --npm | -ya or --yarn | -b or --bun | -pn or --pnpm>") 
     );
     console.log();
     console.log(chalk.blue("Examples:"));
-    console.log(chalk.cyan("  node-initdb -m -e -t") + chalk.gray(" # MongoDB + Express + TypeScript"));
-    console.log(chalk.cyan("  node-initdb -s -f -j") + chalk.gray(" # Sequelize + Fastify + JavaScript"));
+    console.log(chalk.cyan("  node-initdb -m -e -t -n") + chalk.gray(" # MongoDB + Express + TypeScript + npm"));
+    console.log(chalk.cyan("  node-initdb -s -f -j -b") + chalk.gray(" # Sequelize + Fastify + JavaScript + bun"));
     console.log();
     console.log();
     console.log();
@@ -104,7 +104,7 @@ async function FrameWork(options) {
 }
 
 async function selectPackageManager(options) {
-  if (!options.npm && !options.bun) {
+  if (!options.npm && !options.bun && !options.yarn && !options.pnpm) {
     const { pm } = await inquirer.prompt([
       {
         name: "pm",
@@ -112,7 +112,9 @@ async function selectPackageManager(options) {
         message: "Choose your package manager:",
         choices: [
           { name: "npm", value: "npm" },
-          { name: "bun", value: "bun" }
+          { name: "bun", value: "bun" },
+          { name: "yarn", value: "yarn" },
+          { name: "pnpm", value: "pnpm" }
         ]
       }
     ]);
@@ -150,8 +152,10 @@ program
   .option('-el, --elysia', 'SetUp Initializing For elysia js')
   .option('-j, --javascript', 'SetUp Initializing For javascript')
   .option('-t, --typescript', 'SetUp Initializing For typescript')
-  .option("--npm", "Use npm as the package manager")
-  .option("--bun", "Use bun as the package manager")
+  .option('-n, --npm', "Use npm as the package manager")
+  .option('-b, --bun', "Use bun as the package manager")
+  .option('-ya,--yarn', "Use yarn as the package manager")
+  .option('-pn, --pnpm', "Use pnpm as the package manager")
   .option('-h', 'Show All Details')
   .action((options) => {
     if (options.h) {
@@ -175,8 +179,10 @@ program
         console.error('Please choose only one option: either --javascript or --typescript, not both.');
         process.exit(1);
       }
-      if (options.npm && options.bun) {
-        console.error('Please choose only one option: either --npm or --bun, not both.');
+
+      const selectedOptions = [options.npm, options.yarn, options.pnpm, options.bun].filter(Boolean);
+      if (selectedOptions.length > 1) {
+        console.error('Please choose only one option: either --npm or --bun or --yarn or --pnpm, not more than one.');
         process.exit(1);
       }
 
