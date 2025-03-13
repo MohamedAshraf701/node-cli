@@ -1,10 +1,9 @@
-<p>
-  <a href="https://github.com/MohamedAshraf701/node-cli/blob/main">
-    <img src="https://github.com/user-attachments/assets/fb911b79-9749-4edb-8aea-594262ef4365" height="70" width="70" alt="ashraf704" style="float:left; margin-right: 15px;" />
-  </a>
-  <strong style="font-size: 24px;">node-initdb</strong><br />
-  <span>CLI tool for initializing project configurations and structures in Node.js projects.</span>
-</p>
+
+<div align="left">
+  <img src="https://github.com/user-attachments/assets/fb911b79-9749-4edb-8aea-594262ef4365" height="70" width="70" alt="ashraf704" align="left" style="vertical-align: middle; margin-right: 10px;" />
+  <h3>node-initdb</h3>
+  <p>CLI tool for initializing project configurations and structures in Node.js projects.</p>
+</div>
 
 ---
 
