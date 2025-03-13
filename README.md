@@ -1,3 +1,9 @@
+<p>
+ <a href="https://github.com/MohamedAshraf701/node-cli/blob/main">
+    <img src="https://github.com/MohamedAshraf701/node-cli/blob/main/Logo.png" height="70" width="70" alt="ashraf704" />
+  </a>
+</p>
+
 # node-initdb
 
 node-initdb is a CLI tool for initializing project configurations and structures in Node.js projects. **It now requires you to select a database, a web framework, and a language (JavaScript or TypeScript) for the tool to work.** In addition to setting up your chosen database and framework, node-initdb now supports file upload functionality and JWT-based authentication.
@@ -16,18 +22,24 @@ npm install -g node-initdb
 
 Navigate to your project directory and run node-initdb with the appropriate options. **You must choose one option each for:**
 
-- **Database:**  
+- **Database:**
+
   - MongoDB: `--mongo` or `-m`
   - Sequelize: `--seque` or `-s`
 
-- **Web Framework:**  
+- **Web Framework:**
+
   - Express: `--express` or `-e`
   - Fastify: `--fastify` or `-f`
   - Elysia: `--elysia` or `-el`
 
-- **Language:**  
+- **Language:**
   - JavaScript: `--javascript` or `-j`
   - TypeScript: `--typescript` or `-t`
+
+- **PackageManager:**
+  - Npm: `--npm`
+  - Bun: `--bun`
 
 **Important:** All three categories (database, framework, and language) are required. If any one is missing, node-initdb will not run.
 
@@ -35,28 +47,28 @@ Optionally, you can add `--yes` (or `-y`) to skip interactive prompts and use de
 
 ### Examples
 
-- **MongoDB, Express, and TypeScript:**
+- **MongoDB, Express, and TypeScript with npm:**
 
   ```bash
-  node-initdb --mongo --express --typescript
+  node-initdb --mongo --express --typescript --npm
   # or shorthand:
-  node-initdb -m -e -t
+  node-initdb -m -e -t --npm
   ```
 
-- **Sequelize, Fastify, and JavaScript:**
+- **Sequelize, Fastify, and JavaScript with bun:**
 
   ```bash
-  node-initdb --seque --fastify --javascript
+  node-initdb --seque --fastify --javascript --bun
   # or shorthand:
-  node-initdb -s -f -j
+  node-initdb -s -f -j --bun
   ```
 
-- **Sequelize, Elysia, and JavaScript:**
+- **Sequelize, Elysia, and JavaScript with npm:**
 
   ```bash
-  node-initdb --seque --elysia --javascript
+  node-initdb --seque --elysia --javascript --npm
   # or shorthand:
-  node-initdb -s -el -j
+  node-initdb -s -el -j --npm
   ```
 
 ### Add Module Task
@@ -136,6 +148,6 @@ If you find node-initdb useful, please consider supporting the project:
 
 <p>
   <a href="https://www.buymeacoffee.com/ashraf704">
-    <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="ashraf704" />
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="ashraf704" />
   </a>
 </p>

@@ -1,9 +1,9 @@
 const fs = require('fs'); // File system module for file operations
 const readline = require('readline'); // Module for reading line input from the console
 const path = require('path'); // Module for handling file paths
-
 const { exec } = require('child_process');
 const mkdirp = require('mkdirp');
+
 // Variables to hold folder and file structures and commands
 let folders;
 let files;
@@ -16,11 +16,6 @@ const semverRegex = /^(\d+\.)?(\d+\.)?(\*|\d+)$/; // Regex to validate semantic 
 const gitRepoRegex = /^(https?:\/\/|git@)([^:/]+)[:/]([^:/]+)\/([^:/]+)(\.git)?$/; // Regex to validate Git repository URLs
 const jsFileRegex = /^[a-zA-Z0-9-_]+\.js$/; // Regex to validate JavaScript file names
 const licenses = ['MIT', 'ISC', 'Apache-2.0', 'GPL-3.0']; // List of valid licenses
-
-const rl = readline.createInterface({
-  input: process.stdin, // Standard input stream
-  output: process.stdout // Standard output stream
-});
 
 const questions = [ // Array of questions for user input
   `Package name: (${currentDirectoryName}) `,
@@ -79,8 +74,8 @@ const validateAnswer = (index, answer) => { // Function to validate user input b
   return true;
 };
 
-const askQuestion = (index,options) => { // Recursive function to ask each question to the user
-  if (index === questions.length) { // Check if all questions have been asked
+const askQuestion = (index, options, rl) => { // Recursive function to ask each question to the user
+  if (index >= questions.length) { // Check if all questions have been asked
     let rootFilename = options.javascript  ? defaultValues[3] : defaultValues[9]
     const packageJson = { // Object to store the package.json data
       name: answers[0] || defaultValues[0],
@@ -88,8 +83,8 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
       description: answers[2] || defaultValues[2],
       main: answers[3] || rootFilename,
       scripts: {
-        start: `node ${answers[3] || rootFilename}`,
-        dev: `${(options.elysia && options.typescript) ? `bun run --watch ${answers[3] || rootFilename}` : `nodemon ${answers[3] || rootFilename}`}`,
+        start: `${options.npm ? `node ${answers[3] || rootFilename}` : `bun run --watch ${answers[3] || rootFilename}`}`,
+        dev: `${options.npm ? `nodemon ${answers[3] || rootFilename}` : `bun run --watch ${answers[3] || rootFilename}`}`,
         test: answers[4] || defaultValues[4]
       },
       repository: answers[5] ? { type: "git", url: answers[5] } : undefined,
@@ -101,6 +96,7 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
     fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2)); // Write the package.json file
     console.log("package.json file has been generated");
     rl.close();
+
     let Mongo;
     let Seque;
      // Determine which database setup to initialize based on user input
@@ -160,7 +156,7 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
 
     // Execute command to install required packages
     console.log('Installing required packages...');
-    exec(cmd, (error, stdout, stderr) => {
+    exec(`${options.npm ? "npm install "+cmd: "bun add "+cmd}`, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error installing packages: ${error.message}`);
             return;
@@ -171,16 +167,23 @@ const askQuestion = (index,options) => { // Recursive function to ask each quest
         }
         console.log(`Packages installed successfully: ${stdout}`);
     }); // Close the readline interface
+
+    setTimeout(() => {
+      if (!process.stdin.destroyed) {
+        process.stdin.destroy();
+      }
+      process.exit(0);
+    }, 3000);
+
     return;
   }
-
   rl.question(questions[index], (answer) => { // Ask the next question
     answer = answer.trim(); // Trim whitespace from the input
     if (validateAnswer(index, answer)) { // Validate the input
       answers.push(answer); // Store valid input
-      askQuestion(index + 1,options); // Ask the next question
+      askQuestion(index + 1, options, rl); // Ask the next question
     } else {
-      askQuestion(index,options); // Re-ask the same question if validation fails
+      askQuestion(index, options, rl); // Re-ask the same question if validation fails
     }
   });
 };

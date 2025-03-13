@@ -788,5 +788,5 @@ For more information, visit:
 If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.com or open an issue on GitHub.
             ` } // Empty .env file
     ]},
-    cmd : 'npm install @fastify/formbody @fastify/cors @fastify/static dotenv fastify fastify-jwt fs @fastify/jwt mongoose @fastify/multipart'
+    cmd : '@fastify/formbody @fastify/cors @fastify/static dotenv fastify fastify-jwt fs @fastify/jwt mongoose @fastify/multipart bun'
 }

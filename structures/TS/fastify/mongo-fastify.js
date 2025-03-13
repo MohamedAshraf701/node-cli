@@ -920,5 +920,5 @@ If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.co
 
             ` } // Empty .env file
     ]},
-    cmd : 'npm install @fastify/formbody @fastify/cors @fastify/static bcryptjs config fastify fastify-jwt jsonwebtoken mongoose multer typescript dotenv fastify fastify-jwt fs ts-node @fastify/jwt mongoose @fastify/multipart @types/bcryptjs @types/config @types/jsonwebtoken @types/mongoose @types/multer concurrently'
+    cmd : '@fastify/formbody @fastify/cors @fastify/static bcryptjs config fastify fastify-jwt jsonwebtoken mongoose multer typescript dotenv fastify fastify-jwt fs ts-node @fastify/jwt mongoose @fastify/multipart @types/bcryptjs @types/config @types/jsonwebtoken @types/mongoose @types/multer concurrently bun bun-types'
 }

@@ -729,5 +729,5 @@ If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.co
 
         ` }
     ]},
-    cmd : 'npm install body-parser cors dotenv express fs http-errors https jsonwebtoken sequelize mysql2 multer'
+    cmd : 'body-parser cors dotenv express fs http-errors https jsonwebtoken sequelize mysql2 multer bun'
 }

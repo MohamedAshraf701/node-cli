@@ -756,5 +756,5 @@ If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.co
 
             ` } // Empty .env file
     ]},
-    cmd : 'npm install body-parser cors dotenv express fs http-errors https jsonwebtoken mongoose multer'
+    cmd : 'body-parser cors dotenv express fs http-errors https jsonwebtoken mongoose multer bun'
 }

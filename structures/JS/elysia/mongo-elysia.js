@@ -902,5 +902,5 @@ For more information, visit:
 If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.com or open an issue on GitHub.
             ` } // Empty .env file
     ]},
-    cmd : 'npm install @elysiajs/cors @elysiajs/jwt @elysiajs/node dotenv elysia elysia-helmet elysia-rate-limit fs https mongoose jsonwebtoken'
+    cmd : '@elysiajs/cors @elysiajs/jwt @elysiajs/node dotenv elysia elysia-helmet elysia-rate-limit fs https mongoose jsonwebtoken bun'
 }

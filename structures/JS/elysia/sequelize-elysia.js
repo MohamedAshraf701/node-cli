@@ -767,5 +767,5 @@ If you encounter any issues, feel free to reach out at ashrafchauhan567@gmail.co
 
         ` }
     ]},
-    cmd : 'npm install @elysiajs/cors @elysiajs/jwt @elysiajs/node dotenv elysia elysia-helmet elysia-rate-limit fs https mongoose jsonwebtoken sequelize mysql2'
+    cmd : '@elysiajs/cors @elysiajs/jwt @elysiajs/node dotenv elysia elysia-helmet elysia-rate-limit fs https mongoose jsonwebtoken sequelize mysql2 bun'
 }    

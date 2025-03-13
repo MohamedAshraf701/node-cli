@@ -6,65 +6,128 @@ const path = require("path"); // Module for handling file paths
 const { loadEnvFile } = require("process");
 const { default: inquirer } = require("inquirer");
 const { default: chalk } = require("chalk");
+const figlet = require("figlet")
 
 function capitalizeFirstChar(str) {
   if (!str) return str; // Return the string if it's empty or null
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+printBanner();
+
+function printBanner() {
+  const msg = "Node - InitDB";
+
+  figlet(msg, (err, data) => {
+    if (err) {
+      console.log("Figlet error:", err);
+      return;
+    }
+    console.log();
+    console.log(chalk.cyan.bold(data));
+    console.log();
+    console.log(chalk.yellow.bold("🚀 Initialize your Node.js project in seconds!"));
+    console.log(chalk.green("✨ Choose a database, web framework, and language."));
+    console.log();
+    console.log(
+      chalk.magentaBright("Usage: ") +
+      chalk.yellow("node-initdb ") +
+      chalk.white("-m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript>")
+    );
+    console.log();
+    console.log(chalk.blue("Examples:"));
+    console.log(chalk.cyan("  node-initdb -m -e -t") + chalk.gray(" # MongoDB + Express + TypeScript"));
+    console.log(chalk.cyan("  node-initdb -s -f -j") + chalk.gray(" # Sequelize + Fastify + JavaScript"));
+    console.log();
+    console.log();
+    console.log();
+    console.log(chalk.yellow.bold("🚀 Add Module In Your Project!"));
+    console.log(chalk.green("📂 Generates controllers, models, routes, auth & file uploads."));
+    console.log();
+    console.log(
+      chalk.magentaBright("Usage: ") +
+      chalk.yellow("node-add ") +
+      chalk.white(`"<module-name>"`) + chalk.gray(`  -m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript>`)
+    );
+    console.log();
+    console.log(chalk.blue("Examples:"));
+    console.log(chalk.cyan(`  node-add "user" -m -e -t`) + chalk.gray(" user module # MongoDB + Express + TypeScript"));
+    console.log(chalk.cyan(`  node-add "auth" -s -f -j`) + chalk.gray(" auth module # Sequelize + Fastify + JavaScript"));
+    console.log();
+  });
+}
+
 async function Language(options) {
   if (!options.javascript && !options.typescript) {
-    const answers = await inquirer.prompt({
-      name: "language",
-      type: "list",
-      message: "Choose a language:\n",
-      choices: [
-        { name: chalk.yellow("JavaScript"), value: "javascript" },
-        { name: chalk.blue("TypeScript"), value: "typescript" }
-      ]
-    });
-
-    options[answers.language] = true;
+    const { language } = await inquirer.prompt([
+      {
+        name: "language",
+        type: "list",
+        message: "Choose a language:",
+        choices: [
+          { name: chalk.yellow("JavaScript"), value: "javascript" },
+          { name: chalk.blue("TypeScript"), value: "typescript" }
+        ]
+      }
+    ]);
+    options[language] = true;
   }
 }
 
 async function DB(options) {
   if (!options.mongo && !options.seque) {
-    const answers = await inquirer.prompt({
-      name: "database",
-      type: "list",
-      message: "Choose a database:\n",
-      choices: [
-        { name: chalk.green("MongoDB"), value: "mongo" },
-        { name: chalk.red("Sequelize"), value: "seque" }
-      ]
-    });
-
-    options[answers.database] = true;
+    const { database } = await inquirer.prompt([
+      {
+        name: "database",
+        type: "list",
+        message: "Choose a database:",
+        choices: [
+          { name: chalk.green("MongoDB"), value: "mongo" },
+          { name: chalk.red("Sequelize"), value: "seque" }
+        ]
+      }
+    ]);
+    options[database] = true;
   }
 }
 
 async function FrameWork(options) {
   if (!options.express && !options.fastify && !options.elysia) {
-    const answers = await inquirer.prompt({
-      name: "framework",
-      type: "list",
-      message: "Choose a framework:\n",
-      choices: [
-        { name: chalk.cyan("Express"), value: "express" },
-        { name: chalk.magenta("Fastify"), value: "fastify" },
-        { name: chalk.white("Elysia"), value: "elysia" }
-      ]
-    });
-
-    options[answers.framework] = true;
+    const { framework } = await inquirer.prompt([
+      {
+        name: "framework",
+        type: "list",
+        message: "Choose a framework:",
+        choices: [
+          { name: chalk.cyan("Express"), value: "express" },
+          { name: chalk.magenta("Fastify"), value: "fastify" },
+          { name: chalk.white("Elysia"), value: "elysia" }
+        ]
+      }
+    ]);
+    options[framework] = true;
   }
 }
-// Setting up the CLI tool with commander
+
+async function getProjectName(name) {
+  if (!name) {
+    const { projectName } = await inquirer.prompt([
+      {
+        name: "projectName",
+        type: "input",
+        message: "Please enter your project name:",
+        validate: (input) => input.trim() !== "" || "Project name cannot be empty."
+      }
+    ]);
+    return projectName;
+  }
+  return name;
+}
+
 program
   .version("1.0.0")
   .description("A CLI tool to create a folder structure for Node.js projects")
-  .arguments("<name>")
+  .arguments("[name]")
   .option("-m, --mongo", "SetUp Initializing For MongoDB")
   .option("-s, --seque", "SetUp Initializing For Sequelize")
   .option("-e, --express", "SetUp Initializing For express js")
@@ -74,49 +137,56 @@ program
   .option("-t, --typescript", "SetUp Initializing For typescript")
 
   .action(async (name, options) => {
-    // 'name' will be the first argument after the command
-    const capitalizeAndValidateFilename = (str) => {
-      // Validate input
-      if (typeof str !== "string" || !str) {
-        console.log("Input must be a non-empty string");
+
+    setTimeout(async () => {
+      // 'name' will be the first argument after the command
+      name = await getProjectName(name);
+
+      const capitalizeAndValidateFilename = (str) => {
+        // Validate input
+        if (typeof str !== "string" || !str) {
+          console.log("Input must be a non-empty string");
+          process.exit(1);
+        }
+
+        // Define invalid characters for filenames
+        const invalidChars = /[<>:"\/\\|?*\x00-\x1F]/;
+
+        // Check for invalid characters
+        if (invalidChars.test(str)) {
+          console.log("String contains invalid characters for a filename");
+          process.exit(1);
+        }
+
+        // Capitalize the first character
+        const capitalizedStr = str.charAt(0).toUpperCase() + str.slice(1);
+
+        return capitalizedStr;
+      };
+
+      // Ask for missing selections
+      await Language(options);
+      await DB(options);
+      await FrameWork(options);
+
+      if (options.express && options.fastify && options.elysia) {
+        console.error(
+          "Please choose only one option: either --express or --fastify or --elysia, not all."
+        );
+        process.exit(1);
+      }
+      if (options.javascript && options.typescript) {
+        console.error(
+          "Please choose only one option: either --javascript or --typescript, not both."
+        );
         process.exit(1);
       }
 
-      // Define invalid characters for filenames
-      const invalidChars = /[<>:"\/\\|?*\x00-\x1F]/;
-
-      // Check for invalid characters
-      if (invalidChars.test(str)) {
-        console.log("String contains invalid characters for a filename");
-        process.exit(1);
+      if (!name) {
+        console.log("Please provide a project name as an argument.");
+        process.exit(1); // Exit if project name is not provided
       }
 
-      // Capitalize the first character
-      const capitalizedStr = str.charAt(0).toUpperCase() + str.slice(1);
-
-      return capitalizedStr;
-    };
-     // Ask for missing selections
-    await Language(options);
-    await DB(options);
-    await FrameWork(options);
-
-    if (options.express && options.fastify && options.elysia) {
-      console.error(
-        "Please choose only one option: either --express or --fastify or --elysia, not all."
-      );
-      process.exit(1);
-    }
-    if (options.javascript && options.typescript) {
-      console.error(
-        "Please choose only one option: either --javascript or --typescript, not both."
-      );
-      process.exit(1);
-    }
-    if (!name) {
-      console.log("Please provide a project name as an argument.");
-      process.exit(1); // Exit if project name is not provided
-    }else {
       let moduleName = capitalizeAndValidateFilename(name);
       const rootPath = path.join(process.cwd()); // Root path of the project
       let folder;
@@ -227,8 +297,8 @@ server.register(Routes${moduleName} ,{prefix : "/api/v1/${moduleName}"});
   
           `);
         }
-      } 
-      else if(options.elysia) {
+      }
+      else if (options.elysia) {
         if (options.javascript) {
           console.log(`
 Add This Code Into Your Project Main file 
@@ -266,7 +336,7 @@ const Routes${moduleName} = require("./Routes/${moduleName}.Route");
 apiV1Router.use("/${moduleName}", Routes${moduleName});
                         
           `);
-        }else{
+        } else {
           console.log(`
 Add This Code Into Your Project Main file 
 
@@ -279,7 +349,7 @@ apiV1Router.use("/${moduleName}", Router${moduleName});
           `);
         }
       }
-    }
+    }, 200);
   });
 
 // Parse command line arguments

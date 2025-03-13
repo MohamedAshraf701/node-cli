@@ -1,59 +1,140 @@
 #!/usr/bin/env node
-
 // Importing necessary modules
-const program = required('commander');
+const { program } = require('commander');
 const askQuestion = require('./init'); // Function to initialize questions
-// const { default: chalk } = require('chalk');
-// const { default: inquirer } = require('inquirer');
-import chalk from 'chalk'
-import inquirer from 'inquirer';
+const { default: chalk } = require('chalk');
+const { default: inquirer } = require('inquirer');
+const readline = require('readline'); // Moved here so we can reinitialize it later
+const figlet = require("figlet")
+
+printBanner();
+
+function printBanner() {
+  const msg = "Node - InitDB";
+
+  figlet(msg, (err, data) => {
+    if (err) {
+      console.log("Figlet error:", err);
+      return;
+    }
+    console.log();
+    console.log(chalk.cyan.bold(data));
+    console.log();
+    console.log(chalk.yellow.bold("🚀 Initialize your Node.js project in seconds!"));
+    console.log(chalk.green("✨ Choose a database, web framework, and language."));
+    console.log();
+    console.log(
+      chalk.magentaBright("Usage: ") +
+      chalk.yellow("node-initdb ") +
+      chalk.white("-m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript>")
+    );
+    console.log();
+    console.log(chalk.blue("Examples:"));
+    console.log(chalk.cyan("  node-initdb -m -e -t") + chalk.gray(" # MongoDB + Express + TypeScript"));
+    console.log(chalk.cyan("  node-initdb -s -f -j") + chalk.gray(" # Sequelize + Fastify + JavaScript"));
+    console.log();
+    console.log();
+    console.log();
+    console.log(chalk.yellow.bold("🚀 Add Module In Your Project!"));
+    console.log(chalk.green("📂 Generates controllers, models, routes, auth & file uploads."));
+    console.log();
+    console.log(
+      chalk.magentaBright("Usage: ") +
+      chalk.yellow("node-add ") +
+      chalk.white(`"<module-name>"`) + chalk.gray(`  -m <-m or --mongo | -s or --seque> -e <-e or --express | -f or --fastify | -el or --elysia> -j <-j or --javascript | -t or --typescript>`)
+    );
+    console.log();
+    console.log(chalk.blue("Examples:"));
+    console.log(chalk.cyan(`  node-add "user" -m -e -t`) + chalk.gray(" user module # MongoDB + Express + TypeScript"));
+    console.log(chalk.cyan(`  node-add "auth" -s -f -j`) + chalk.gray(" auth module # Sequelize + Fastify + JavaScript"));
+    console.log();
+  });
+}
 
 async function Language(options) {
   if (!options.javascript && !options.typescript) {
-    const answers = await inquirer.prompt({
-      name: "language",
-      type: "list",
-      message: "Choose a language:\n",
-      choices: [
-        { name: chalk.yellow("JavaScript"), value: "javascript" },
-        { name: chalk.blue("TypeScript"), value: "typescript" }
-      ]
-    });
-
-    options[answers.language] = true;
+    const { language } = await inquirer.prompt([
+      {
+        name: "language",
+        type: "list",
+        message: "Choose a language:",
+        choices: [
+          { name: chalk.yellow("JavaScript"), value: "javascript" },
+          { name: chalk.blue("TypeScript"), value: "typescript" }
+        ]
+      }
+    ]);
+    options[language] = true;
   }
 }
 
 async function DB(options) {
   if (!options.mongo && !options.seque) {
-    const answers = await inquirer.prompt({
-      name: "database",
-      type: "list",
-      message: "Choose a database:\n",
-      choices: [
-        { name: chalk.green("MongoDB"), value: "mongo" },
-        { name: chalk.red("Sequelize"), value: "seque" }
-      ]
-    });
-
-    options[answers.database] = true;
+    const { database } = await inquirer.prompt([
+      {
+        name: "database",
+        type: "list",
+        message: "Choose a database:",
+        choices: [
+          { name: chalk.green("MongoDB"), value: "mongo" },
+          { name: chalk.red("Sequelize"), value: "seque" }
+        ]
+      }
+    ]);
+    options[database] = true;
   }
 }
 
 async function FrameWork(options) {
   if (!options.express && !options.fastify && !options.elysia) {
-    const answers = await inquirer.prompt({
-      name: "framework",
-      type: "list",
-      message: "Choose a framework:\n",
-      choices: [
-        { name: chalk.cyan("Express"), value: "express" },
-        { name: chalk.magenta("Fastify"), value: "fastify" },
-        { name: chalk.white("Elysia"), value: "elysia" }
-      ]
-    });
+    const { framework } = await inquirer.prompt([
+      {
+        name: "framework",
+        type: "list",
+        message: "Choose a framework:",
+        choices: [
+          { name: chalk.cyan("Express"), value: "express" },
+          { name: chalk.magenta("Fastify"), value: "fastify" },
+          { name: chalk.white("Elysia"), value: "elysia" }
+        ]
+      }
+    ]);
+    options[framework] = true;
+  }
+}
 
-    options[answers.framework] = true;
+async function selectPackageManager(options) {
+  if (!options.npm && !options.bun) {
+    const { pm } = await inquirer.prompt([
+      {
+        name: "pm",
+        type: "list",
+        message: "Choose your package manager:",
+        choices: [
+          { name: "npm", value: "npm" },
+          { name: "bun", value: "bun" }
+        ]
+      }
+    ]);
+    options[pm] = true;
+  }
+}
+
+async function askDefaultStructure(options) {
+  // Only ask if the yes flag wasn't provided
+  if (!options.yes) {
+    const { useDefault } = await inquirer.prompt([
+      {
+        name: "useDefault",
+        type: "confirm",
+        message: "Do you want to use the default structure (skip interactive project setup)?",
+        default: false
+      }
+    ]);
+    // If the user confirms, mark options.yes true
+    if (useDefault) {
+      options.yes = true;
+    }
   }
 }
 
@@ -69,29 +150,51 @@ program
   .option('-el, --elysia', 'SetUp Initializing For elysia js')
   .option('-j, --javascript', 'SetUp Initializing For javascript')
   .option('-t, --typescript', 'SetUp Initializing For typescript')
-  .action( async (options) => {
-    
-    // Ask for missing selections
-    await Language(options);
-    await DB(options);
-    await FrameWork(options);
-
-    if (options.express && options.fastify && options.elysia) {
-      console.error('Please choose only one option: either --express or --fastify or --elysia, not all.');
-      process.exit(1);
-    }
-    if (options.javascript && options.typescript) {
-      console.error('Please choose only one option: either --javascript or --typescript, not both.');
-      process.exit(1);
+  .option("--npm", "Use npm as the package manager")
+  .option("--bun", "Use bun as the package manager")
+  .option('-h', 'Show All Details')
+  .action((options) => {
+    if (options.h) {
+      return;
     }
 
-    // Existing conditions for mongo/seque options and default structure (--yes)
-    if (options.yes) {
-        console.log('Creating default structure...');
-        askQuestion(9, options); // Start asking initial questions with default structure
-    } else {
-      askQuestion(0, options); // Start asking initial questions
-    }
+    setTimeout(async () => {
+      console.log(chalk.cyan("\n🔧 Initializing project setup...\n"));
+
+      // Ask for missing selections
+      await Language(options);
+      await DB(options);
+      await FrameWork(options);
+      await selectPackageManager(options);
+
+      if (options.express && options.fastify && options.elysia) {
+        console.error('Please choose only one option: either --express or --fastify or --elysia, not all.');
+        process.exit(1);
+      }
+      if (options.javascript && options.typescript) {
+        console.error('Please choose only one option: either --javascript or --typescript, not both.');
+        process.exit(1);
+      }
+      if (options.npm && options.bun) {
+        console.error('Please choose only one option: either --npm or --bun, not both.');
+        process.exit(1);
+      }
+
+      // Ask about default structure if -y wasn't provided already
+      await askDefaultStructure(options);
+
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+
+      // Existing conditions for mongo/seque options and default structure (--yes)
+      if (options.yes) {
+        askQuestion(9, options, rl); // Start asking initial questions with default structure
+      } else {
+        askQuestion(0, options, rl); // Start asking initial questions
+      }
+    }, 200);
   });
 
 // Parse command line arguments
