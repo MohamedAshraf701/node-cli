@@ -16,9 +16,9 @@ node-initdb is a CLI tool for initializing project configurations and structures
 
 Install node-initdb globally using npm:
 
-bash
+```bash
 npm install -g node-initdb
-
+```
 
 ## Usage
 
@@ -51,35 +51,35 @@ Optionally, you can add `--yes` (or `-y`) to skip interactive prompts and use de
 
 - **MongoDB, Express, and TypeScript with npm:**
 
-  bash
+  ```bash
   node-initdb --mongo --express --typescript --npm
   # or shorthand:
   node-initdb -m -e -t -n
-  
+  ```
 
 - **Sequelize, Fastify, and JavaScript with bun:**
 
-  bash
+  ```bash
   node-initdb --seque --fastify --javascript --bun
   # or shorthand:
   node-initdb -s -f -j -b
-  
+  ```
 
 - **Sequelize, Elysia, and JavaScript with yarn:**
 
-  bash
+  ```bash
   node-initdb --seque --elysia --javascript --yarn
   # or shorthand:
   node-initdb -s -el -j -yr
-  
+  ```
 
 ### Add Module Task
 
 To add a new module using `node-add`, run:
 
-bash
+```bash
 node-add <moduleName> [options]
-
+```
 
 Replace `<moduleName>` with your desired module name. Use the same options for database, framework, language, and package manager:
 
@@ -90,15 +90,15 @@ Replace `<moduleName>` with your desired module name. Use the same options for d
 
 #### Example
 
-bash
+```bash
 node-add "user" -m -e -t -n
-
+```
 
 ## Folder Structure
 
 After running node-initdb, your project will have the following structure:
 
-
+```
 - config/
 - Controllers/
 - Routes/
@@ -106,7 +106,7 @@ After running node-initdb, your project will have the following structure:
 - Middleware/
 - uploads/
 - Utils/
-
+```
 
 ## Files Created
 
@@ -143,7 +143,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For questions or support, feel free to reach out:
 
 - **Email:** ashrafchauhan567@gmail.com
-- **Email:** meetkathiriya78028@gmail.com
 - **GitHub:** [@MohamedAshraf701](https://github.com/MohamedAshraf701)
 
 ## Support
